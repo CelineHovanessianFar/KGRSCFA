@@ -1,0 +1,682 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>13: HiAM: A Hierarchical Attention based Model for knowledge graph multi-hop reasoning</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="dbdd845a-97ad-46b1-8339-b5328d5799b0" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/></div><h1 class="page-title">13: HiAM: A Hierarchical Attention based Model for knowledge graph multi-hop reasoning</h1><p class="page-description"></p></header><div class="page-body"><p id="54826247-068e-4167-91b2-b7fc2a7b2b69" class="">Features:</p><p id="395118b2-0029-4452-a2f1-3665ef2c0789" class="">
+</p><p id="d430a5b3-85cf-42ab-be6c-90e4993b5f55" class="">Questions:</p><p id="fb7f90e4-077e-4294-adfe-bf422d69e9e7" class="">
+</p><hr id="59f15d99-c4cd-41d4-8077-0fce9a2ddd5a"/><p id="b6e1cfe2-38c5-411d-99ca-7371cb61c79d" class="">The authors developed HiAM, a model that utilizes bidirectional LSTM and hierarchical attention mechanisms to process and reason over knowledge graphs. They extract and combine both predecessor and connection paths between entity pairs, embedding these paths to represent structural data. The model applies entity/relation-level and path-level attention to weigh the importance of elements within paths, using this refined information to predict and explain multi-hop reasoning tasks more effectively.</p><hr id="79543f39-234a-4380-b07e-c124408aff40"/><h2 id="22ba1f42-bf6c-48ac-b6c4-5e053fed30bb" class="">Genearal Summary</h2><p id="9118d181-3bad-45f0-a702-dbe575315dd0" class="">This paper introduces a novel <mark class="highlight-orange_background">Hierarchical</mark> <mark class="highlight-orange_background">Attention based</mark> Model (HiAM) for multi-hop reasoning in knowledge graphs, which are used in tasks like question answering and <mark class="highlight-orange_background">recommender systems</mark>. A significant challenge in multi-hop reasoning is <mark class="highlight-orange_background">effectively synthesizing the structural information (paths)</mark> in knowledge graphs for deeper reasoning. Traditional methods often focus on connection paths between entity pairs but tend to overlook predecessor paths and fail to weight the importance of entities and relations within these paths appropriately.</p><p id="fff7af83-0228-4a66-a600-73a75d6c2928" class="">HiAM addresses these limitations by <mark class="highlight-orange_background">incorporating predecessor paths</mark>, which provide semantic contexts that precede connection paths, thus offering a more accurate representation of entities involved. The model also employs a <mark class="highlight-orange_background">hierarchical attention mechanism</mark> that considers the <mark class="highlight-orange_background">contributions of different granularities within the paths</mark>, such as entity/relation-level and path-level features, to enhance the reasoning process.</p><p id="11a89893-dac8-4014-adf8-bd6c7a773818" class="">The paper demonstrates that by combining predecessor paths with connection paths and applying hierarchical attention, HiAM can effectively enhance path representations and discern the varying impacts of different entities and relations on reasoning. Experimental results across three benchmark datasets show that HiAM achieves competitive performance compared to existing methods. Furthermore, the model can explain its predictions by selecting the most significant path, providing greater interpretability.</p><p id="e7eb2f15-3e22-4220-8d2d-764e2ea2791d" class="">Overall, this approach not only improves the accuracy of reasoning over knowledge graphs but also enhances the explainability of the results, which is crucial for applications in real-world scenarios where understanding the basis of decisions made by AI systems is essential.</p><hr id="c1392d65-5ba0-4be3-bb8e-6b83c5b7ac86"/><h2 id="deb1f801-609c-4c86-8091-b7d34852f10c" class="">Technical Aspects</h2><p id="7257061c-67ec-41e0-a47f-45d7b8c0ba82" class="">The technical solution proposed in the paper, the Hierarchical Attention based Model (HiAM), is designed to address multi-hop reasoning in knowledge graphs by enhancing the use of paths and paying attention to the contributions of different entities and relations. Here&#x27;s a detailed breakdown of the key components and technical aspects of HiAM:</p><h3 id="fef5a103-83e9-4423-82e3-941785b0c164" class=""><strong>1. Path Extraction</strong></h3><p id="712bfc2f-fa74-4030-9a5a-5f3cf802539c" class="">HiAM <mark class="highlight-orange_background">starts by extracting two types of paths from the knowledge graph for each entity pair:</mark></p><ul id="e5f83352-ae8f-44bb-be8b-35da439e65cb" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background"><strong>Predecessor Paths:</strong></mark> These paths provide context and semantic information about the head entity before it connects to another entity. They are used to enrich the representation of the head entity, offering more depth to the initial reasoning state.</li></ul><ul id="e6751c5c-e037-43aa-9b81-30e0712b2539" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background"><strong>Connection Paths:</strong></mark> These are direct paths between the entity pair in question and are typically the focus of traditional reasoning methods.</li></ul><p id="81903d3a-9445-4ebc-9da3-c3d0a26d6d14" class="">The model combines these paths, using both to feed into the attention mechanisms. <mark class="highlight-orange_background">This dual-path approach allows the model to have a richer context and more accurate semantics</mark> for entities at the beginning of the reasoning process.</p><h3 id="c7ac0490-8bd1-4bd6-86bb-65b61e4a8af2" class=""><strong>2. Hierarchical Attention Mechanism</strong></h3><p id="2fae988f-4ace-4062-a9d1-7342192c215c" class=""><mark class="highlight-orange_background">After the paths are extracted, </mark>HiAM applies a hierarchical attention mechanism in two layers:</p><ul id="0b64f949-8b2e-4ef5-81c5-766e8de97fa2" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background"><strong>Entity/Relation-Level Attention:</strong></mark><mark class="highlight-orange_background"> </mark>This layer of attention assesses the importance of each entity and relation within a path. Not all entities and relations contribute equally to the reasoning outcome; thus, this attention mechanism helps to weigh their importance based on their contribution to the reasoning task. It helps to filter out noise and focus on the most informative parts of each path.</li></ul><ul id="d55a53db-104a-4b3c-870f-b8dade009253" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background"><strong>Path-Level Attention:</strong></mark><mark class="highlight-orange_background"> </mark>This higher-level attention aggregates the information from multiple paths, evaluating the significance of each path in the context of the overall reasoning task. It helps to determine which paths are most likely to lead to a correct inference by focusing on paths that are more informative or relevant.</li></ul><h3 id="a6393601-3013-4699-8fca-1ec2131b3ec4" class=""><strong>3. Fusion of Multi-Granularity Features</strong></h3><p id="b1310291-732a-4527-829e-c2767ce29b28" class="">The features processed through the entity/relation-level attention <mark class="highlight-orange_background">are then fed into</mark> the path-level attention. This hierarchical structure allows the model to analyze impacts at different granularities, integrating detailed insights from entities and relations with broader insights from entire paths.</p><h3 id="a7bbbac1-eed0-4185-a528-570c44318787" class=""><strong>4. Prediction and Explainability</strong></h3><p id="f35a75cc-b861-4660-ba8d-1448434b5648" class="">The final step involves fusing the multi-granularity features to predict the correct answers (relations or entities) for the given queries. HiAM goes a step further by selecting the most significant path as an explanation for the predicted answers. This feature is crucial for applications requiring transparency in AI decisions, as it provides a clear and understandable rationale for each prediction.</p><h3 id="186c6697-e9bf-4344-91dd-163badcdc96c" class=""><strong>5. Training and Optimization</strong></h3><p id="61ba9382-20f9-4077-b950-3135e28f35c7" class="">The model is trained to maximize the distinction between correct (positive samples) and incorrect (negative samples) predictions by minimizing a margin-based loss function. This training process also involves standard techniques like backpropagation and optimization through Adam optimizer.</p><h3 id="5ddaee2d-54f3-4736-bb2f-60c42fb50a8c" class=""><strong>Summary</strong></h3><p id="fd6fc5b2-8e54-48b6-9d9b-b9c8d9821f12" class="">HiAM leverages advanced techniques in neural network architectures and attention mechanisms to handle the complexity of reasoning over large-scale knowledge graphs. By incorporating both predecessor and connection paths and applying a hierarchical attention mechanism, HiAM not only improves the reasoning capabilities over knowledge graphs but also provides a method to make these processes interpretable and justifiable.</p><hr id="fa9f75f2-0f91-491c-a0c9-37b7defd3f64"/><h2 id="520a8a65-9c2a-49b9-8344-a5e34102626e" class="">Neural Model and Structural Details</h2><p id="6c7739d2-f76d-4839-9da3-b1a3f61baf39" class="">The HiAM model employs several neural network techniques and data representation methods to enhance its multi-hop reasoning capabilities over knowledge graphs. Here’s a deeper dive into the neural models used and how data is represented within HiAM:</p><h3 id="7e2208c1-0d44-4964-916b-e65f77294e3b" class=""><strong>1. Neural Model Used</strong></h3><h3 id="150e0ad0-3f6f-4b96-8569-80f34d8c7baf" class=""><strong>Bidirectional Long Short-Term Memory (Bi-LSTM)</strong></h3><ul id="56c12f9c-7e10-40d9-8fbf-9cb014e76f3b" class="bulleted-list"><li style="list-style-type:disc"><strong>Role in HiAM:</strong> The Bi-LSTM is crucial in encoding the sequences of entities and relations within each path. By processing information in both forward and backward directions, the Bi-LSTM captures the contextual relationships between entities and relations over the paths, providing a richer and more dynamic representation of the sequential data in the paths.</li></ul><ul id="0fe99ec5-fbdc-4468-ac22-5b91bc9ad9a5" class="bulleted-list"><li style="list-style-type:disc"><strong>Benefits:</strong> This bidirectional approach allows the model to capture both past (backward) and future (forward) dependencies in data, which is particularly useful in understanding the sequence of entities and relations that lead to a particular inference.</li></ul><h3 id="20ff58d1-afa9-4fd8-ada2-4b6b0f445385" class=""><strong>2. Data Representation</strong></h3><h3 id="2adb9ee9-578c-4131-b97b-bf99c65420dc" class=""><strong>Embedding Layer</strong></h3><ul id="c556b305-610d-4397-9f8e-62bc0a50eacc" class="bulleted-list"><li style="list-style-type:disc"><strong>Purpose:</strong> Each entity and relation in t<mark class="highlight-orange_background">he knowledge graph is initially represented as a low-dimensional vector.</mark> These embeddings are crucial as they transform sparse, high-dimensional categorical data into a dense, continuous vector space where similar entities and relations are positioned closer together.</li></ul><ul id="86226652-b479-4f67-b646-1509534fb2fe" class="bulleted-list"><li style="list-style-type:disc"><strong>Initialization:</strong> The embeddings are <mark class="highlight-orange_background">randomly initialized and then refined during training through backpropagation.</mark></li></ul><h3 id="6b73b9c5-e659-4869-bc74-608b1e789301" class=""><strong>Path Representation</strong></h3><ul id="6d734d15-8212-4114-9eed-8c45d0d47635" class="bulleted-list"><li style="list-style-type:disc"><strong>Combination of Embeddings:</strong> Each path, comprising a sequence of entities and relations, is represented by combining the embeddings of its constituent entities and relations. This combination could be a simple concatenation or more complex operations that blend the features of entities and relations in the path.</li></ul><ul id="9e22b586-bf26-47e9-9525-5813ac3c602b" class="bulleted-list"><li style="list-style-type:disc"><strong>Processing:</strong> The combined embeddings of paths are then processed through the Bi-LSTM to capture the sequential interdependencies of entities and relations along the paths.</li></ul><h3 id="348a6766-976c-47a8-9a3e-59050a68d034" class=""><strong>3. Attention Mechanisms</strong></h3><h3 id="fbc88639-fa68-495a-95aa-77c95330f3af" class=""><strong>Hierarchical Attention Network</strong></h3><ul id="3f47137f-fcd3-4bf0-866c-8d610ef979d8" class="bulleted-list"><li style="list-style-type:disc"><strong>Entity/Relation-Level Attention:</strong><ul id="55a55a32-744a-476f-8f24-f1d360200331" class="bulleted-list"><li style="list-style-type:circle"><strong>Mechanism:</strong> This attention layer computes attention scores for each entity and relation within a path, determining their importance to the reasoning task at hand.</li></ul><ul id="077649f6-101c-49f8-afbf-10621fa23188" class="bulleted-list"><li style="list-style-type:circle"><strong>Output:</strong> The output is a weighted sum of the LSTM-encoded features of entities and relations, where weights are determined by their respective attention scores.</li></ul></li></ul><ul id="e1af90f6-ccfc-495d-b00f-e4b5c9c37e60" class="bulleted-list"><li style="list-style-type:disc"><strong>Path-Level Attention:</strong><ul id="c210934f-823e-4fed-aa31-c89a2a4dc28a" class="bulleted-list"><li style="list-style-type:circle"><strong>Mechanism:</strong> After entity/relation-level attention, the path-level attention aggregates the representations of different paths, evaluating and emphasizing those more relevant to answering the query.</li></ul><ul id="81b25415-1a79-4a48-a6a1-daf4575de700" class="bulleted-list"><li style="list-style-type:circle"><strong>Output:</strong> The model computes a final representation for each entity pair by aggregating over the different path representations with attention scores that reflect the significance of each path in the reasoning process.</li></ul></li></ul><h3 id="052d6d67-af51-4fb0-996d-ad90f01f705c" class=""><strong>4. Interaction and Prediction</strong></h3><h3 id="40678abd-8132-4b83-8310-d2825714a6f1" class=""><strong>Interaction Layer</strong></h3><ul id="64bbd3d9-0212-40e1-b1a0-c236e3e0cb0a" class="bulleted-list"><li style="list-style-type:disc"><strong>Function:</strong> Post attention, the interaction layer models the relationship between the aggregated path representation and the query relation (in case of predicting relations) using vector operations.</li></ul><ul id="52e05618-c9db-4540-8229-fc70181eef7d" class="bulleted-list"><li style="list-style-type:disc"><strong>Techniques Used:</strong> Element-wise product operations and multi-layer perceptrons (MLP) are utilized to compute the final interaction scores, which serve as the basis for predictions.</li></ul><h3 id="d9fbb764-f844-49c0-8373-fedec592baf6" class=""><strong>Prediction Function</strong></h3><ul id="e311478e-4ddb-49f6-a397-21a2119c4b2f" class="bulleted-list"><li style="list-style-type:disc"><strong>Definition:</strong> The prediction function estimates the probability of a candidate relation being correct given the entity pair and the aggregated path information.</li></ul><ul id="cec43a6b-e0ef-4f9c-98a9-e0f80b7b1a16" class="bulleted-list"><li style="list-style-type:disc"><strong>Activation:</strong> A sigmoid function is applied to the output of the interaction layer to derive probabilities, facilitating binary classification (e.g., relation exists or does not exist).</li></ul><h3 id="2a03be72-e97c-4d78-8ca3-46a0afdd564c" class=""><strong>5. Training and Optimization</strong></h3><h3 id="616ee05d-3c27-435a-8f00-8b7805a08f37" class=""><strong>Objective Function</strong></h3><ul id="c67ba11d-acf3-4938-85ae-c73bd355feb8" class="bulleted-list"><li style="list-style-type:disc"><strong>Margin-Based Loss:</strong> The model uses a margin-based loss function during training, which emphasizes increasing the distance (margin) between the scores of positive and negative examples to improve classification accuracy.</li></ul><ul id="ea07c09d-fd04-4323-a374-e1636eee362e" class="bulleted-list"><li style="list-style-type:disc"><strong>Regularization:</strong> Techniques like L2 regularization are used to prevent overfitting and ensure the generalization ability of the model.</li></ul><h3 id="475f846b-0621-460e-bc90-0f12e40ad7e3" class=""><strong>Optimization</strong></h3><ul id="89f38f4f-47d7-4ce2-a304-b43e28df02a8" class="bulleted-list"><li style="list-style-type:disc"><strong>Optimizer:</strong> The Adam optimizer, known for its efficiency in handling sparse gradients and adaptive learning rate capabilities, is employed to minimize the loss function.</li></ul><h3 id="19ba00d1-8603-490f-96bc-871e1521d472" class=""><strong>Conclusion</strong></h3><p id="326a1122-3fea-4150-b66f-f55a3200ea53" class="">HiAM incorporates advanced neural network architectures, sophisticated embedding techniques, and innovative attention mechanisms to effectively process and reason over complex structured data in knowledge graphs. These components work in concert to enhance the model&#x27;s reasoning performance and its ability to provide interpretable results.</p><hr id="78a878a1-bf5d-4aae-a71d-526514ce3e72"/><h2 id="d45a78c7-e774-44f4-ab2e-3a30f6a9c1b4" class="">Counterfactual Concept</h2><p id="7760fdd6-ee4f-4706-bc4d-cc8e957b79fa" class="">
+</p><p id="1f33cd9c-2b7a-4a01-9b1b-a4d42f0257c3" class="">
+</p><p id="4071ba77-fa91-47f3-a017-c3f98c5ca913" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

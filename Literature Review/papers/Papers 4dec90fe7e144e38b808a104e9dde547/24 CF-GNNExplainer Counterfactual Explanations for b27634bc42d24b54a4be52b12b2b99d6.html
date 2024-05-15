@@ -1,0 +1,684 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>24: CF-GNNExplainer: Counterfactual Explanations for Graph Neural
+Networks</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="b27634bc-42d2-4b54-a4be-52b12b2b99d6" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/></div><h1 class="page-title">24: CF-GNNExplainer: Counterfactual Explanations for Graph Neural<br/>Networks<br/></h1><p class="page-description"></p></header><div class="page-body"><p id="f6ae712a-d12b-47a8-984e-6a5ee90894b8" class="">Features:</p><p id="253c2f47-4c97-4e3e-8e79-6a504f6be4bb" class="">
+</p><p id="7ed4c5fa-1993-40b8-aad0-6a5989d0e51c" class="">Questions:</p><p id="fb129249-8ae8-485e-8dff-4a09fd00379c" class="">
+</p><hr id="6295f0b4-a234-447c-a26b-df0c8b6a71ce"/><p id="98fe8f33-932b-498f-9bf8-5378ef23c0a2" class="">The authors developed CF-GNNExplainer, a method for generating counterfactual explanations for Graph Neural Networks (GNNs) by iteratively removing edges from the graph&#x27;s adjacency matrix. This approach identifies the minimal perturbations necessary to change the GNN&#x27;s prediction for a given node, ensuring explanations are both concise and accurate. The method was evaluated on three datasets, demonstrating high accuracy with minimal edge deletions.</p><hr id="14da8554-9720-480c-952c-8abea920af5b"/><h2 id="10ce0822-cc35-449b-984e-d562882d03b5" class="">Genearal Summary</h2><p id="5c07ee24-fa17-4506-9382-a5e17271a8b3" class="">The paper &quot;CF-GNNExplainer: Counterfactual Explanations for Graph Neural Networks&quot; <mark class="highlight-orange_background">focuses on providing counterfactual (CF) explanations for Graph Neural Networks (GNNs)</mark>. Unlike<mark class="highlight-orange_background"> existing methods that generate subgraphs relevant to a particular prediction,</mark> CF-GNNExplainer aims to understand how a prediction can be changed to achieve an alternative outcome. The proposed method generates CF explanations by <mark class="highlight-orange_background">making minimal perturbations, specifically edge deletions</mark>, to the input graph data to change the prediction.</p><p id="788cd467-727f-481e-858f-6395271283de" class=""><strong>Key Points:</strong></p><ol type="1" id="dbbb6a67-1b6e-4eb6-a8ae-76242359e143" class="numbered-list" start="1"><li><strong>Introduction:</strong><ul id="c80f0d4a-1441-40cf-829b-18e51c549459" class="bulleted-list"><li style="list-style-type:disc">The paper addresses the growing demand for explainable AI, particularly for GNNs used in real-world applications.</li></ul><ul id="57985d92-8e72-4ad0-ae29-9b55aea24300" class="bulleted-list"><li style="list-style-type:disc">Traditional methods focus on relevant subgraphs for a given prediction but are not counterfactual in nature.</li></ul><ul id="011ae8ba-6fb5-478b-9d41-5a09c486c01e" class="bulleted-list"><li style="list-style-type:disc">CF explanations answer &quot;What changes would lead to a different outcome?&quot;</li></ul></li></ol><ol type="1" id="4236aa77-4ed1-4799-92df-cc84d9e55a6a" class="numbered-list" start="2"><li><strong>Methodology:</strong><div><ul id="4d2cee3e-6bc9-4efd-adb9-f26c6da78021" class="bulleted-list"><li style="list-style-type:disc"><strong>CF-GNNExplainer:</strong> The method <mark class="highlight-orange_background">iteratively removes edges from the graph&#x27;s adjacency matrix using matrix sparsification techniques until the prediction changes</mark>.</li></ul></div><ul id="900cac75-2de0-4b31-95f1-2f16be7b2812" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background">The goal is to find the minimal number of edge deletions that result in a different prediction</mark>, ensuring that the explanation is concise and impactful.</li></ul></li></ol><ol type="1" id="d1753fab-6383-4243-81a9-1e48c3d524bb" class="numbered-list" start="3"><li><strong>Evaluation:</strong><ul id="b39d1562-393c-4028-bc01-0692173c61c4" class="bulleted-list"><li style="list-style-type:disc">The method is evaluated on three public datasets (tree-cycles, tree-grids, and ba-shapes) using metrics such as fidelity, explanation size, sparsity, and accuracy.</li></ul><ul id="6d994a15-b08c-404b-a323-ece219416f49" class="bulleted-list"><li style="list-style-type:disc">CF-GNNExplainer achieves high accuracy (at least 94%) <mark class="highlight-orange_background">while removing fewer than three edges on average, </mark>indicating that the removed edges are crucial for the original predictions.</li></ul></li></ol><ol type="1" id="07cefe95-30a7-4f5d-a923-49caa196b706" class="numbered-list" start="4"><li><strong>Comparison:</strong><ul id="a9613217-30df-4f6d-b983-ad06ed02c47d" class="bulleted-list"><li style="list-style-type:disc">The paper compares CF-GNNExplainer with several baselines, including random perturbation, 1-hop neighborhood methods, and GNNExplainer (an existing GNN explanation method).</li></ul><ul id="db6e406d-6327-4259-90ab-8ace9f7fe239" class="bulleted-list"><li style="list-style-type:disc">CF-GNNExplainer outperforms these baselines in terms of producing minimal, accurate CF explanations.</li></ul></li></ol><ol type="1" id="722e141f-9beb-424e-9fd9-4e69ae9db694" class="numbered-list" start="5"><li><strong>Results:</strong><ul id="c1ef108a-ddfd-49ee-9dcf-918cb82f492c" class="bulleted-list"><li style="list-style-type:disc">CF-GNNExplainer generates CF examples for the majority of instances across the datasets.</li></ul><ul id="8f270ad0-8d9d-40ee-bef7-89b998dddd5c" class="bulleted-list"><li style="list-style-type:disc">It achieves minimal explanations with high fidelity and accuracy, showing that it effectively identifies crucial edges for predictions.</li></ul></li></ol><ol type="1" id="f8768fd0-7dd4-41c0-b12d-2f5707804dc2" class="numbered-list" start="6"><li><strong>Societal Impact and Future Work:</strong><ul id="76a4d63d-e8dd-497c-a9bf-7412b7d1f6d3" class="bulleted-list"><li style="list-style-type:disc">The paper highlights the importance of considering the context in which CF explanations are used and the need for rigorous evaluation protocols for XAI methods.</li></ul><ul id="6f763592-25bb-419a-b769-0639aef1df79" class="bulleted-list"><li style="list-style-type:disc">Future work includes extending the method to accommodate graph classification tasks, incorporating node feature perturbations, and conducting user studies to assess the practical utility of CF-GNNExplainer.</li></ul></li></ol><p id="c8711cba-6cf5-40a9-9af2-c545365c87d3" class="">Overall, the paper presents a novel and effective method for generating CF explanations for GNNs, contributing to the broader field of explainable AI and addressing the specific need for understanding and modifying GNN predictions.</p><hr id="89890994-06ed-4231-80fe-597e5c3a88b0"/><h2 id="835efab1-46b1-494f-a7ff-8136a14a37a0" class="">Technical Aspects</h2><h3 id="736b3ca4-ae8b-4efd-9cad-08827d43fa31" class=""><strong>Problem Formulation</strong></h3><p id="641af8ce-5712-425b-88da-9ca45a920b52" class="">The goal is to generate counterfactual (CF) explanations for a given node&#x27;s prediction by a Graph Neural Network (GNN). Specifically, the method seeks to identify the minimal changes to the graph&#x27;s structure (i.e., edge deletions) that result in a different prediction for the node.</p><h3 id="d352d6ad-1404-43f1-a2c0-ba27bbc2199a" class=""><strong>Graph Neural Networks (GNNs)</strong></h3><p id="b9a43d2d-b798-4897-b43f-dc245e1a7196" class="">GNNs operate on graph structures, where nodes represent entities and edges represent relationships between them. A typical GNN updates node representations by aggregating features from neighboring nodes through multiple layers. The final node representations are then used for tasks such as node classification.</p><h3 id="7da622c0-7512-4b0b-a73e-b94ccd3f2c01" class=""><strong>CF-GNNExplainer Method</strong></h3><h3 id="c9579081-0665-462c-9c39-f58f4812aa59" class=""><strong>1. Adjacency Matrix Perturbation</strong></h3><ul id="7dfdbfb8-25af-4628-84de-5a71545c4fa3" class="bulleted-list"><li style="list-style-type:disc"><strong>Objective</strong>: Find a perturbation matrix <em>P</em> such that the GNN&#x27;s prediction for the perturbed graph differs from the original prediction.</li></ul><ul id="73f54262-9dbd-4d7f-89a9-ca75152df892" class="bulleted-list"><li style="list-style-type:disc"><strong>Process</strong>:<ul id="6cdf46be-f1f1-426b-acfa-4f9d9167b059" class="bulleted-list"><li style="list-style-type:circle">The original adjacency matrix <em>Av</em> for the node&#x27;s subgraph is perturbed to <em>Av</em>ˉ=<em>P</em>⊙<em>Av</em>, where <em>P</em> is a binary matrix indicating which edges to keep (1) or remove (0), and ⊙ denotes element-wise multiplication.</li></ul></li></ul><h3 id="ee5b1a52-db34-488a-9105-dd7df5e71e98" class=""><strong>2. Counterfactual Generating Model</strong></h3><ul id="b5c9e20d-c455-41cc-af3b-98f344b73d13" class="bulleted-list"><li style="list-style-type:disc"><strong>Function 𝑔</strong><em><strong>g</strong></em>: This function generates counterfactual examples by applying the perturbation <em>P</em> to the adjacency matrix <em>Av</em>. It shares the same weight parameters <em>W</em> as the original GNN model <em>f</em>.</li></ul><ul id="4ff04fc6-3b2a-4081-aa59-021264e6f649" class="bulleted-list"><li style="list-style-type:disc"><strong>Modified Adjacency Matrix</strong>: The perturbed adjacency matrix <em>Av</em>ˉ is calculated without affecting the self-loops (which are preserved by adding an identity matrix <em>I</em>).</li></ul><h3 id="8246b64d-ff01-4154-b7b2-c491efd6ee3c" class=""><strong>3. Loss Function Optimization</strong></h3><p id="a11c11a3-8c7b-495b-81d6-a587e9d147b9" class="">The method optimizes a loss function that balances the prediction change and the minimality of the perturbation:</p><figure id="d9ec03cc-057c-4367-9c7f-81eec71e9076" class="image"><a href="24%20CF-GNNExplainer%20Counterfactual%20Explanations%20for%20b27634bc42d24b54a4be52b12b2b99d6/Untitled.png"><img style="width:336.9977722167969px" src="24%20CF-GNNExplainer%20Counterfactual%20Explanations%20for%20b27634bc42d24b54a4be52b12b2b99d6/Untitled.png"/></a></figure><ul id="4c39ba92-0dd7-4421-8300-82a748ceed2b" class="bulleted-list"><li style="list-style-type:disc"><strong>Prediction Loss 𝐿pred</strong><em><strong>L</strong></em><strong>pred</strong>: Encourages the perturbed prediction to differ from the original prediction.</li></ul><ul id="fce7dd32-7f7f-4e9e-8f4a-8862c3667f2a" class="bulleted-list"><li style="list-style-type:disc"><strong>Distance Loss 𝐿dist</strong><em><strong>L</strong></em><strong>dist</strong>: Ensures the perturbation is minimal by penalizing large changes in the adjacency matrix.</li></ul><h3 id="0e6d6d3a-4ab1-4d1f-b2a2-0bf98c1088c1" class=""><strong>4. Optimization Process</strong></h3><ul id="139aade9-15c5-4961-8d8d-70674d6d7a56" class="bulleted-list"><li style="list-style-type:disc"><strong>Initialization</strong>: Start with a perturbation matrix <em>P</em>^ initialized to all ones (indicating no perturbations initially).<p id="040247ee-5954-47dc-a351-c4c711a6109d" class="">𝑃^</p></li></ul><ul id="97a80f82-5907-43c4-a762-64f057a5984d" class="bulleted-list"><li style="list-style-type:disc"><strong>Iterations</strong>: Over multiple iterations, update <em>P</em>^ to minimize the loss function. Apply a sigmoid transformation followed by a threshold to convert <em>P</em>^ into a binary perturbation matrix <em>P</em>.</li></ul><ul id="9f26bdd9-b182-4db5-ae11-953bf5f0c25e" class="bulleted-list"><li style="list-style-type:disc"><strong>Gradient Descent</strong>: Use gradient-based optimization (e.g., SGD) to update <em>P</em>^ based on the loss gradient.</li></ul><h3 id="0c5d6797-fd25-4b44-86a4-68d70d7e8cf8" class=""><strong>5. Algorithm</strong></h3><p id="f955866a-a249-442a-892c-bf9d50081a63" class="">The core steps of the CF-GNNExplainer algorithm are summarized as follows:</p><ol type="1" id="36dd0d27-b371-41ce-ad24-dcb4d3d5338c" class="numbered-list" start="1"><li><strong>Obtain Original Prediction</strong>: Get the GNN prediction <em>f</em>(<em>v</em>) for the node <em>v</em>.</li></ol><ol type="1" id="f50d0cd0-ed09-46ef-b15c-eddffb4e117d" class="numbered-list" start="2"><li><strong>Initialize Perturbation Matrix</strong>: Set <em>P</em>^ to all ones.</li></ol><ol type="1" id="6e62e99d-5867-451f-aad6-076a648016a7" class="numbered-list" start="3"><li><strong>Iterative Optimization</strong>:<ul id="c5026263-af22-426b-8a28-9dcb16efcb17" class="bulleted-list"><li style="list-style-type:disc">For each iteration:<ul id="d4a5288a-1091-4294-b453-41f30d4fdb1f" class="bulleted-list"><li style="list-style-type:circle">Compute the binary perturbation matrix <em>P</em> by thresholding <em>P</em>^.</li></ul><ul id="a75b9095-da04-491a-88cd-a4248fa152c0" class="bulleted-list"><li style="list-style-type:circle">Generate the counterfactual example <em>v</em>ˉ using <em>P</em>.</li></ul><ul id="a86dd555-265c-4297-818c-56777cf9457f" class="bulleted-list"><li style="list-style-type:circle">Update <em>P</em>^ by minimizing the loss function.</li></ul></li></ul></li></ol><ol type="1" id="7bfc5a22-cbaf-40ac-bf6f-dc5aa0851584" class="numbered-list" start="4"><li><strong>Return Optimal CF Explanation</strong>: After completing the iterations, return the perturbation that results in the minimal valid counterfactual example.</li></ol><h3 id="b70ee512-edb8-494f-b9b9-c74085307cc8" class=""><strong>Evaluation</strong></h3><p id="ac16d771-c767-4679-8f4d-9d203aa249ee" class="">The method is evaluated using several metrics:</p><ul id="7f2837b8-261b-48bb-9727-d3dcca829220" class="bulleted-list"><li style="list-style-type:disc"><strong>Fidelity</strong>: Proportion of nodes where the prediction changes (lower is better for CF explanations).</li></ul><ul id="161b8f69-53ce-4197-bce3-2e43f94f206c" class="bulleted-list"><li style="list-style-type:disc"><strong>Explanation Size</strong>: Number of edges removed (smaller is better).</li></ul><ul id="c17f7961-2d11-40ac-8610-d593afcf29e2" class="bulleted-list"><li style="list-style-type:disc"><strong>Sparsity</strong>: Proportion of edges in the subgraph that are removed (higher is better).</li></ul><ul id="955c951a-442b-4725-86e4-f79a64d6975f" class="bulleted-list"><li style="list-style-type:disc"><strong>Accuracy</strong>: Proportion of correct CF explanations, where only crucial edges are removed.</li></ul><h3 id="ae74203e-8828-4203-82d7-d58bcdc1ddc4" class=""><strong>Key Advantages</strong></h3><ul id="968c5a59-f988-4dd9-9961-e53dc6235f83" class="bulleted-list"><li style="list-style-type:disc"><strong>Minimal Perturbations</strong>: CF-GNNExplainer finds the smallest changes needed to alter the prediction, leading to concise explanations.</li></ul><ul id="48e002e6-81f6-488e-9a23-54391c29de77" class="bulleted-list"><li style="list-style-type:disc"><strong>High Accuracy</strong>: The method accurately identifies edges crucial to the original prediction, ensuring the explanations are meaningful and reliable.</li></ul><p id="ea7fdf7e-4f34-4f0e-bb1b-073b970d7375" class="">In summary, CF-GNNExplainer provides a novel approach to generating CF explanations for GNNs by leveraging edge deletions to identify minimal and accurate changes that alter node predictions, enhancing the interpretability of GNN models.</p><hr id="6e110581-3f3a-47ae-a0f2-8a30aef91e56"/><h2 id="f6ebba57-c0dd-4598-bdc8-e87e354b022e" class="">Neural Model and Structural Details</h2><p id="0ddddbbc-6fe6-47a0-ad5a-b62d3c128aa5" class="">
+</p><hr id="3aff20bf-202a-457b-829d-d48c9a07b9b7"/><h2 id="40f9ba17-2185-4869-a89a-1c9671df07e5" class="">Counterfactual Concept</h2><p id="c6c09024-9f42-4bda-8669-f4f08ce81245" class="">
+</p><p id="fd6578f0-3726-4852-a336-2dc9209ab615" class="">
+</p><p id="c039f1fb-0189-48ac-8260-1daa50ebeb3e" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

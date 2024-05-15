@@ -1,0 +1,685 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>27: Good Counterfactuals and Where to Find Them:
+A Case-Based Technique for Generating Counterfactuals
+for Explainable AI (XAI)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="bb5bd186-859b-451d-9c63-80e44160c43c" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/></div><h1 class="page-title">27: Good Counterfactuals and Where to Find Them:<br/>A Case-Based Technique for Generating Counterfactuals<br/>for Explainable AI (XAI)<br/></h1><p class="page-description"></p></header><div class="page-body"><p id="4e83b9ff-a5ba-4874-a342-dbcfdd1297b4" class="">Features:</p><p id="536ede4f-65ef-401d-9f9d-6ce275606c43" class="">
+</p><p id="e07a62d7-1293-4274-8d53-1668bcc53a1e" class="">Questions:</p><p id="d6fff025-d795-4cfb-ab36-323b7d0b9ea8" class="">
+</p><hr id="1aa8506e-1514-4175-a958-0fb269020271"/><p id="17bd72ba-876a-4bb3-9c3c-da7f7a6918a8" class="">The authors developed a case-based reasoning method to generate counterfactual explanations by identifying pairs of minimally differing cases (explanation cases) in a dataset. They then reused these pairs to construct new counterfactuals for unseen queries, adjusting feature values iteratively to ensure class changes, thereby improving the explanatory coverage and plausibility of generated counterfactuals.</p><hr id="c4149439-3759-4816-a913-d2a6580da174"/><h2 id="b6f0129c-cc0b-46d7-8135-f776b4141b1c" class="">Genearal Summary</h2><div><p id="6b79748e-984f-4a63-a175-8a7fc3fd41eb" class="">This paper discusses a novel approach to generating counterfactual explanations for Explainable AI (XAI) <mark class="highlight-orange_background">using Case-Based Reasoning (CBR)</mark>. Counterfactual explanations are<mark class="highlight-orange_background"> favored for their causal informativeness</mark> and compliance with legal regulations like <mark class="highlight-orange_background">GDPR</mark>. They are<mark class="highlight-orange_background"> created by altering problem features until a class-change is achieved,</mark> such as suggesting to a loan applicant that a slightly lower loan amount would have been approved.</p></div><p id="78de61c7-88b0-48d5-b0b0-d2d8e26527ff" class="">However, current techniques face challenges in generating &quot;good&quot; counterfactuals, which are sparse (modifying few features) and plausible. The paper shows that many commonly used datasets have few naturally occurring good counterfactuals. To address this, t<mark class="highlight-orange_background">he authors propose a new case-based method that leverages existing patterns of good counterfactuals within a case-base to generate new, analogous counterfactuals</mark> for explanation purposes.</p><p id="0a08cd66-2552-475c-b34a-2f79c4b92290" class="">The method involves:</p><ol type="1" id="21da6ce5-2331-4d34-860a-7dff8e9061cb" class="numbered-list" start="1"><li>Identifying pairs of cases (explanation cases or XCs) where one case (the counterfactual) differs minimally from the other (the query).</li></ol><ol type="1" id="5f12964c-fa35-488e-b0fc-3dc9d2250b61" class="numbered-list" start="2"><li>Using these XCs to guide the generation of new counterfactuals for unseen queries.</li></ol><ol type="1" id="ba364d3c-fce5-4e3b-9281-7c7796229b04" class="numbered-list" start="3"><li>Adapting the generated counterfactuals if necessary to ensure they belong to a different class than the query.</li></ol><p id="36afd878-569c-4171-bf08-6b060f230217" class="">Experiments demonstrate that this technique significantly improves the ability to find good counterfactuals in various datasets, enhancing the explanatory coverage and competence of case-bases.</p><p id="76c522a2-cc1c-4bd9-88d2-64dd2c283c45" class="">Key contributions of the paper include:</p><ul id="79538716-433d-4ff5-b14e-a92f1d350af5" class="bulleted-list"><li style="list-style-type:disc">A novel case-based approach to counterfactual generation.</li></ul><ul id="fadeb281-de01-4ab5-bf5b-90e934397fb4" class="bulleted-list"><li style="list-style-type:disc">Introduction of the concept of explanatory competence.</li></ul><ul id="a8f5367c-f083-4ff6-86ac-bf53c351a4ab" class="bulleted-list"><li style="list-style-type:disc">Empirical evidence showing improved counterfactual potential and coverage using the proposed technique.</li></ul><p id="768e20ed-b020-4484-bbc2-711fc6ca67af" class="">Overall, the paper argues for the effectiveness of a CBR approach in generating meaningful and actionable counterfactual explanations, which are crucial for the transparency and trustworthiness of AI systems.</p><hr id="aa42f2a3-c288-4c2e-9c3d-8751ad312b2c"/><h2 id="5fdf57e4-7bc8-46e0-8cad-67ca8c17b15b" class="">Technical Aspects</h2><p id="6c5fca8e-0814-41c3-9728-1c050e981eb3" class="">The technical solution proposed in the paper involves a method to generate counterfactual explanations using Case-Based Reasoning (CBR). Here’s a detailed breakdown of their approach:</p><h3 id="9a5ec51e-c391-4a84-bbc4-f68bb8f1897a" class=""><strong>Key Concepts</strong></h3><ol type="1" id="ad078238-510f-4d91-907d-49828faaf888" class="numbered-list" start="1"><li><strong>Counterfactual Explanations</strong>: These are explanations that show how a different outcome could have been achieved by changing some features of the input. For example, a loan application rejected due to insufficient salary might be explained by saying, &quot;If your salary were $X higher, your loan would have been approved.&quot;</li></ol><ol type="1" id="5db68dc1-ac7d-4bb7-b343-6943eadf267d" class="numbered-list" start="2"><li><mark class="highlight-orange_background"><strong>Good Counterfactuals</strong></mark><mark class="highlight-orange_background">: These are counterfactuals that are sparse (modify few features) and plausible (make realistic changes).</mark></li></ol><ol type="1" id="44b2108d-2a9c-47a0-b1d5-cd7bcdc66825" class="numbered-list" start="3"><li><strong>Case-Based Reasoning (CBR)</strong>: This is a method th<mark class="highlight-orange_background">at solves new problems based on the solutions of similar past problems.</mark> For XAI, CBR involves using past cases to explain new ones.</li></ol><h3 id="1ec1ea92-0c59-48b9-bd60-d7a0af442b95" class=""><strong>Technical Steps</strong></h3><h3 id="1063908c-19e7-48e9-9e60-4d092fcd3d2a" class=""><strong>1. Explanation Cases (XC)</strong></h3><ul id="536d22a2-fb32-49a3-9dd7-6418c039c650" class="bulleted-list"><li style="list-style-type:disc"><strong>Explanation Cases (XC)</strong>: An explanation case is a pair of cases: one is the original case (query) and the other is a good counterfactual (minimal difference, different outcome).</li></ul><ul id="8593e15b-d564-4f9a-8199-3ab5af88134a" class="bulleted-list"><li style="list-style-type:disc"><strong>XC Case-Base</strong>: The collection of all explanation cases in the dataset.</li></ul><h3 id="0f01df54-16b6-490f-aeab-443c03379e02" class=""><strong>2. Building the XC Case-Base</strong></h3><ul id="e547c173-9609-444e-a9ca-89da65e9484c" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background">Identify pairs of cases in the dataset where one can serve as a counterfactual for the other.</mark></li></ul><ul id="78c7074a-07bc-4a74-b152-3b3d4c579106" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background">Ensure the counterfactual case differs by no more than 2 features from the original case.</mark></li></ul><h3 id="1962e30d-38c4-46be-aacb-e2640c5058da" class=""><strong>3. Generating Counterfactuals for New Queries</strong></h3><p id="a9693f57-2804-4b05-9e0e-f0108b7d76fb" class="">When a new query (unseen case) needs an explanation:</p><ol type="1" id="a9c3dd44-378c-4daa-a7ba-a07917b24836" class="numbered-list" start="1"><li><strong>Retrieval</strong>: Identify the explanation case from the XC case-base that is most similar to the query.</li></ol><ol type="1" id="9242da7d-9f67-49a5-bce6-a12c99de9651" class="numbered-list" start="2"><li><strong>Reuse</strong>: Construct a new counterfactual for the query by combining features from the query and the identified explanation case.<ul id="52d17549-ccdd-4114-bcaa-42378accc928" class="bulleted-list"><li style="list-style-type:disc"><strong>Match-Features</strong>: Features that are the same between the query and the explanation case are copied to the new counterfactual.</li></ul><ul id="690d8d32-ffa8-430b-b75a-9409d0c4d211" class="bulleted-list"><li style="list-style-type:disc"><strong>Difference-Features</strong>: Features that differ between the query and the explanation case are also applied to the new counterfactual.</li></ul></li></ol><ol type="1" id="ca705eaa-2dda-40f5-af8a-30532dcca063" class="numbered-list" start="3"><li><strong>Validation</strong>: Check if the newly constructed counterfactual has a different class than the query using the underlying machine learning model.</li></ol><ol type="1" id="722598c5-8138-431c-8e7c-5e849a476a6a" class="numbered-list" start="4"><li><strong>Adaptation (if needed)</strong>: If the newly constructed counterfactual does not result in a different class:<ul id="7835ce4e-9878-47e9-9658-1716aa3dd423" class="bulleted-list"><li style="list-style-type:disc">Iterate over the nearest neighbors of the query.</li></ul><ul id="53fef33d-682b-44f2-b0f8-ef7877a76a57" class="bulleted-list"><li style="list-style-type:disc">Modify the difference features until a valid counterfactual is found (one that results in a different class).</li></ul></li></ol><h3 id="b4c5265a-af98-44c0-abe8-d0f098897457" class=""><strong>4. Assessing Explanatory Competence</strong></h3><ul id="64c34269-8ecb-4523-bf64-3849a913eb5c" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background"><strong>Explanatory Competence</strong></mark><mark class="highlight-orange_background">: The fraction of query cases that can be explained using good counterfactuals.</mark></li></ul><ul id="e74e7131-0da5-4811-af28-92b501ab3396" class="bulleted-list"><li style="list-style-type:disc">Calculate the explanatory competence before and after applying the case-based counterfactual generation technique to measure improvement.</li></ul><h3 id="9bc90478-ecaf-4fcf-9914-cf4de765d1fa" class=""><strong>Experiments and Results</strong></h3><ul id="b2bf5fbf-92de-4e6a-a09c-179f3fc74196" class="bulleted-list"><li style="list-style-type:disc"><strong>Datasets</strong>: Various popular datasets are used to test the approach.</li></ul><ul id="b87668b5-2869-4d9c-94c7-29004950de59" class="bulleted-list"><li style="list-style-type:disc"><strong>Metrics</strong>: The key metrics are the explanatory competence (fraction of queries that can be explained) and the counterfactual distance (how different the counterfactual is from the query).</li></ul><ul id="cb5ccf5a-ca9c-4b65-8a78-d7fe987dfe32" class="bulleted-list"><li style="list-style-type:disc"><strong>Findings</strong>: The technique significantly improves the explanatory competence and often produces counterfactuals that are closer to the query than baseline methods.</li></ul><h3 id="c943cb52-1e96-49a7-a2ae-931775de14f3" class=""><strong>Advantages of the Approach</strong></h3><ol type="1" id="57e577a2-4af3-447f-b193-bd4fb66199de" class="numbered-list" start="1"><li><strong>Sparsity</strong>: Ensures minimal feature changes.</li></ol><ol type="1" id="5a2bb802-90fb-42e2-8d93-cea911c939ba" class="numbered-list" start="2"><li><strong>Plausibility</strong>: Generates realistic counterfactuals based on existing data points.</li></ol><ol type="1" id="74966bfa-84cd-45f2-a3e3-87d26bf4e8c6" class="numbered-list" start="3"><li><strong>Efficiency</strong>: Utilizes a structured process to find and adapt counterfactuals.</li></ol><h3 id="47025d84-08d2-48bc-bbfb-76644aa3e02b" class=""><strong>Conclusion</strong></h3><p id="bfb98860-0e86-4e8a-a934-b3a1dfe1760b" class="">The proposed case-based method effectively leverages existing data patterns to generate meaningful and actionable counterfactual explanations, enhancing the transparency and interpretability of AI systems.</p><p id="4d27493e-3141-40e2-a1b3-cbbfc1f03d73" class="">By reusing patterns of good counterfactuals from a case-base, the approach ensures that generated counterfactuals are not only sparse and plausible but also contextually relevant, addressing key challenges in the field of Explainable AI.</p><hr id="10092a33-2f50-480d-8306-106a7353b91f"/><h2 id="c3e176f6-7a14-4284-a953-544aeee2e824" class="">Neural Model and Structural Details</h2><p id="b3258c50-0664-48de-854a-0d1be8bd4bdd" class="">
+</p><hr id="ed502679-6097-472a-bf88-3d4b0fadc22c"/><h2 id="463bf7c3-c332-4b71-8919-c8f070146284" class="">Counterfactual Concept</h2><p id="a3cbc7d2-c00a-4193-9684-81b61a07d892" class="">
+</p><p id="ccb625f3-f01a-411e-b2d7-14dbe9981bf6" class="">
+</p><p id="1ad7628b-01b3-4005-bc1b-584fe76bc4a6" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

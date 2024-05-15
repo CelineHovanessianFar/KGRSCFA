@@ -1,0 +1,685 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Papers</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="4dec90fe-7e14-4e38-b808-a104e9dde547" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="https://www.notion.so/icons/toilet-paper_lightgray.svg"/></div><h1 class="page-title">Papers</h1><p class="page-description"></p></header><div class="page-body"><figure id="c45b25cc-e725-4170-bd91-a9cf10f8e1e5" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/1%20Learning%20and%20Evaluating%20Graph%20Neural%20Network%20Exp%20c45b25cce7254170bd91a9cf10f8e1e5.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>1: Learning and Evaluating Graph Neural Network Explanations based on Counterfactual and Factual Reasoning</a></figure><figure id="39f17878-f71b-470e-abe9-7c26d86a9b52" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/2%20Practical%20Counterfactual%20Policy%20Learning%20for%20Top%2039f17878f71b470eabe97c26d86a9b52.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>2: Practical Counterfactual Policy Learning for Top-𝐾 Recommendations</a></figure><figure id="4c8dfd35-39c8-4a90-8deb-eb1bae7dded4" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/3%20PRINCE%20Provider-side%20Interpretability%20with%20Count%204c8dfd3539c84a908debeb1bae7dded4.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>3: PRINCE: Provider-side Interpretability with Counterfactual Explanations in Recommender Systems</a></figure><figure id="d2d8f51c-a21e-47ce-9f7a-96585194280a" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/4%20Why%20Am%20I%20Not%20Seeing%20It%20Understanding%20Users%E2%80%99%20Need%20d2d8f51ca21e47ce9f7a96585194280a.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>4: Why Am I Not Seeing It? Understanding Users’ Needs for Counterfactual Explanations in Everyday Recommendations</a></figure><figure id="a5de416e-5b7e-454d-810a-04d61302613f" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/5%20Towards%20Fair%20Graph%20Neural%20Networks%20via%20Graph%20Cou%20a5de416e5b7e454d810a04d61302613f.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>5: Towards Fair Graph Neural Networks via Graph Counterfactual</a></figure><figure id="6550de7d-2b1e-4861-b94e-01b78d3fd323" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/6%20Top-N%20Recommendation%20with%20Counterfactual%20User%20Pr%206550de7d2b1e4861b94e01b78d3fd323.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>6: Top-N Recommendation with Counterfactual User Preference Simulation</a></figure><figure id="777a1e46-c093-49b7-933d-16ad81db0637" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/7%20CLEAR%20Generative%20Counterfactual%20Explanations%20on%20%20777a1e46c09349b7933d16ad81db0637.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>7: CLEAR: Generative Counterfactual Explanations on Graphs</a></figure><figure id="1a84cd96-a1db-4c90-b17a-7153df2f1494" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/8%20Counterfactual%20Explainable%20Recommendation%201a84cd96a1db4c90b17a7153df2f1494.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>8: Counterfactual Explainable Recommendation</a></figure><figure id="a63e84c1-fd6d-4cd0-945b-7777fe2ec5ce" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/9%20Counterfactual%20Explanations%20for%20Neural%20Recommend%20a63e84c1fd6d4cd0945b7777fe2ec5ce.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>9: Counterfactual Explanations for Neural Recommenders</a></figure><figure id="a249d6d9-25a5-4c41-af6e-a9de344b0326" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/10%20Causal%20Inference%20for%20Knowledge%20Graph%20based%20Reco%20a249d6d925a54c41af6ea9de344b0326.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>10: Causal Inference for Knowledge Graph based Recommendation</a></figure><figure id="86536189-5e85-4c8e-a907-504f38d98de6" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/11%20CausalKG%20Causal%20Knowledge%20Graph%20Explainability%20%20865361895e854c8ea907504f38d98de6.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>11: CausalKG: Causal Knowledge Graph Explainability using interventional and counterfactual reasoning</a></figure><figure id="c4d77329-5069-4cde-8921-5dbbe0ce8a2e" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/12%20Explainable%20Reasoning%20over%20Knowledge%20Graphs%20for%20c4d7732950694cde89215dbbe0ce8a2e.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>12: Explainable Reasoning over Knowledge Graphs for Recommendation</a></figure><figure id="dbdd845a-97ad-46b1-8339-b5328d5799b0" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/13%20HiAM%20A%20Hierarchical%20Attention%20based%20Model%20for%20k%20dbdd845a97ad46b18339b5328d5799b0.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>13: HiAM: A Hierarchical Attention based Model for knowledge graph multi-hop reasoning</a></figure><figure id="f80aa522-ff30-43af-97b7-c4049ffa8120" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/14%20Incorporating%20prior%20knowledge%20from%20counterfactu%20f80aa522ff3043af97b7c4049ffa8120.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>14: Incorporating prior knowledge from counterfactuals into knowledge graph reasoning</a></figure><figure id="159a049c-3fee-4507-ba60-3e88517df5bf" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/15%20KHGCN%20Knowledge-Enhanced%20Recommendation%20with%20Hi%20159a049c3fee4507ba603e88517df5bf.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>15: KHGCN: Knowledge-Enhanced Recommendation with Hierarchical Graph Capsule Network</a></figure><figure id="a4d64ca0-de24-4c71-a0b1-a59e746a92f9" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/16%20Model-Agnostic%20Counterfactual%20Reasoning%20for%20Eli%20a4d64ca0de244c71a0b1a59e746a92f9.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>16: Model-Agnostic Counterfactual Reasoning for Eliminating Popularity Bias in Recommender System</a></figure><figure id="8593a84a-b9c5-426f-b31a-726fb913e58e" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/17%20Path%20Language%20Modeling%20over%20Knowledge%20Graphs%20fo%208593a84ab9c5426fb31a726fb913e58e.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>17: Path Language Modeling over Knowledge Graphs for Explainable Recommendation</a></figure><figure id="f68a40a1-ef42-4500-91ce-07161c93e6b0" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/18%20TEM%20Tree-enhanced%20Embedding%20Model%20for%20Explainab%20f68a40a1ef42450091ce07161c93e6b0.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>18: TEM: Tree-enhanced Embedding Model for Explainable Recommendation</a></figure><figure id="5cb2ebdf-d942-4696-a09d-969e5fae85bb" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/19%20Temporal%20Meta-path%20Guided%20Explainable%20Recommend%205cb2ebdfd9424696a09d969e5fae85bb.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>19: Temporal Meta-path Guided Explainable Recommendation</a></figure><figure id="0557a89f-d3db-4cb5-97ab-555b7b2782be" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/20%20The%20Dark%20Side%20of%20Explanations%20Poisoning%20Recomme%200557a89fd3db4cb597ab555b7b2782be.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>20: The Dark Side of Explanations: Poisoning Recommender Systems with Counterfactual Examples</a></figure><figure id="de0d9f3f-6587-4684-8dee-bc8a3fd8e18e" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/21%20GNNUERS%20Fairness%20Explanation%20in%20GNNs%20for%20Recomm%20de0d9f3f658746848deebc8a3fd8e18e.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>21: GNNUERS: Fairness Explanation in GNNs for Recommendation via Counterfactual Reasoning</a></figure><figure id="83774e67-f2c1-4f76-a9c4-2ea8aac1e0e9" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/22%20Reinforced%20Path%20Reasoning%20for%20Counterfactual%20Ex%2083774e67f2c14f76a9c42ea8aac1e0e9.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>22: Reinforced Path Reasoning for Counterfactual Explainable Recommendation</a></figure><figure id="14ee8c24-1f8a-426c-87be-a19491782af4" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/23%20Adversarial%20Counterfactual%20Learning%20and%20Evaluat%2014ee8c241f8a426c87bea19491782af4.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>23: Adversarial Counterfactual Learning and Evaluation for Recommender System</a></figure><figure id="b27634bc-42d2-4b54-a4be-52b12b2b99d6" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/24%20CF-GNNExplainer%20Counterfactual%20Explanations%20for%20b27634bc42d24b54a4be52b12b2b99d6.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>24: CF-GNNExplainer: Counterfactual Explanations for Graph Neural
+Networks</a></figure><figure id="64d5ed8d-4f44-47c3-899c-c01038573b4d" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/25%20CoCoX%20Generating%20Conceptual%20and%20Counterfactual%20%2064d5ed8d4f4447c3899cc01038573b4d.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>25: CoCoX: Generating Conceptual and Counterfactual Explanations via Fault-Lines</a></figure><figure id="b108797b-7652-46a0-aa49-5406a75c364b" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/26%20Counterfactual%20Reasoning%20with%20Knowledge%20Graph%20E%20b108797b765246a0aa495406a75c364b.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>26: Counterfactual Reasoning with Knowledge Graph Embeddings</a></figure><figure id="bb5bd186-859b-451d-9c63-80e44160c43c" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/27%20Good%20Counterfactuals%20and%20Where%20to%20Find%20Them%20A%20C%20bb5bd186859b451d9c6380e44160c43c.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>27: Good Counterfactuals and Where to Find Them:
+A Case-Based Technique for Generating Counterfactuals
+for Explainable AI (XAI)</a></figure><figure id="cd4aa05d-6356-4708-b40e-4ab58e0f9d81" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/28%20Path-Specific%20Counterfactual%20Fairness%20cd4aa05d63564708b40e4ab58e0f9d81.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>28: Path-Specific Counterfactual Fairness</a></figure><figure id="feeb212f-5ba3-47b4-8733-7b662149b8e6" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/29%20Reinforcement%20Knowledge%20Graph%20Reasoning%20for%20Exp%20feeb212f5ba347b487337b662149b8e6.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>29: Reinforcement Knowledge Graph Reasoning for Explainable Recommendation</a></figure><figure id="1455fdac-92d9-41fe-8691-def654dd5ff2" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/30%20Explainable%20GNN-based%20models%20over%20knowledge%20gra%201455fdac92d941fe8691def654dd5ff2.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>30: Explainable GNN-based models over knowledge graphs</a></figure><figure id="a349b34b-9d7f-40e2-b437-0f81cd937cd5" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/31%20Post%20Processing%20Recommender%20Systems%20with%20Knowle%20a349b34b9d7f40e2b4370f81cd937cd5.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>31: Post Processing Recommender Systems with Knowledge Graphs
+for Recency, Popularity, and Diversity of Explanations</a></figure><figure id="c6771604-3730-4434-baa1-d86b7ad2ae23" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/32%20Learning%20Heterogeneous%20Knowledge%20Base%20Embedding%20c677160437304434baa1d86b7ad2ae23.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>32: Learning Heterogeneous Knowledge Base Embeddings for Explainable Recommendation</a></figure><figure id="b7c598c1-e694-4a49-8b96-85b72088dc45" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/33%20Cafe%20Coarse-to-Fine%20Neural%20Symbolic%20Reasoning%20f%20b7c598c1e6944a498b9685b72088dc45.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>33: Cafe: Coarse-to-Fine Neural Symbolic Reasoning
+for Explainable Recommendation</a></figure><p id="e700c658-99c5-41e6-90ac-99dde973155d" class="">
+</p><p id="0b1535bf-fd72-4740-96a6-8536fa67777f" class="">
+</p><p id="f8f5566f-e0fb-4965-8bea-9c527529a67a" class="">
+</p><figure id="0e1f0e99-24dc-4ca2-95c1-e461e5175ab7" class="link-to-page"><a href="Papers%204dec90fe7e144e38b808a104e9dde547/Untitled%200e1f0e9924dc4ca295c1e461e5175ab7.html"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/>Untitled</a></figure></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

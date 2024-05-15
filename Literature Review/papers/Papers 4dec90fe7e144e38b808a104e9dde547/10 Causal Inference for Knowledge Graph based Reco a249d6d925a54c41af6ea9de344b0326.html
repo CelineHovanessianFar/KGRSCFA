@@ -1,0 +1,679 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>10: Causal Inference for Knowledge Graph based Recommendation</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="a249d6d9-25a5-4c41-af6e-a9de344b0326" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/></div><h1 class="page-title">10: Causal Inference for Knowledge Graph based Recommendation</h1><p class="page-description"></p></header><div class="page-body"><p id="bc43ecc6-0730-4ea7-a979-cc21338b6ecc" class="">Features:</p><p id="c98d6dc5-2ad9-4e08-84fd-e2e50804aedf" class="">
+</p><p id="0d59bb14-51bf-486e-a8c6-e397a9812c5d" class="">Questions:</p><ol type="1" id="986742a6-1d95-48aa-85a8-ca36c8b1ba68" class="numbered-list" start="1"><li>What does this mean: This score forms a basis for the recommendation system.</li></ol><ol type="1" id="3bccc369-1c8c-4a66-9acc-64fa0d7d4b76" class="numbered-list" start="2"><li>does ‘<mark class="highlight-orange_background">To implement counterfactual reasoning, the model calculates what the similarity scores (S) would look like if the direct effects of the interacted attributes (A) were removed. “ no problem with the embeddings?</mark></li></ol><hr id="db9f6d44-d954-47a7-a32d-3d8ec54dee06"/><p id="9bc32eb2-0241-4887-8e77-565c79b2ea54" class="">The KGCR model integrates causal inference into a knowledge graph-based recommendation system by constructing a causal graph to systematically identify and mitigate biases in user preferences and similarity scoring. It employs Graph Convolutional Networks (GCN) to refine embeddings and introduces counterfactual reasoning to adjust similarity scores by removing the direct effects of user-interacted attributes, leading to more accurate and unbiased recommendations.</p><hr id="b74b4737-5d67-4330-9548-d09fd1dd0c05"/><h2 id="4e8d886c-e274-41ad-911d-d9ee76ca8574" class="">Genearal Summary</h2><p id="e6b2f5fc-147f-44e2-b2f6-67d2fa4d6ef7" class="">This paper introduces the Knowledge Graph-based Causal Recommendation (KGCR) model, which <mark class="highlight-orange_background">integrates causal inference into knowledge graph-based recommender systems</mark> to address two main challenges:</p><ol type="1" id="dfbc883c-be9a-4c33-a6c6-c4143f0b8874" class="numbered-list" start="1"><li><strong>Learning User Preferences on Attributes</strong>: Previous models often failed to accurately<mark class="highlight-orange_background"> represent user preferences regarding specific attributes</mark> within a knowledge graph, such as item features (like brand or genre). KGCR addresses this by using causality tools to identify and mitigate the effects of structural biases in the knowledge graph that may obscure true user preferences.</li></ol><ol type="1" id="4a87c3c8-29cb-4ec5-83e4-874aa7d33dd7" class="numbered-list" start="2"><li><strong>Bias in Similarity Scores</strong>: The interaction of a user with certain attributes can bias similarity scores, leading to inaccurate recommendations<mark class="highlight-orange_background">. KGCR employs counterfactual reasoning to adjust these scores, aiming to reduce bias and improve the accuracy of the recommendations.</mark></li></ol><p id="f97abda3-5ebf-4f0c-99bb-063a7d8b041a" class="">The model operates by<mark class="highlight-orange_background"> constructing a causal graph that maps the relationships and influences between users, items, and attributes. </mark>It then performs <mark class="highlight-orange_background">interventions in this graph to disentangle the influence of structure from user preferences and to correct for bias in similarity scoring.</mark></p><p id="82d88a7f-c0c2-4428-9055-0c1082b9bf2f" class="">The paper validates KGCR&#x27;s effectiveness through extensive experiments across multiple datasets (Amazon-book, LastFM, and Yelp2018), showing that it outperforms several state-of-the-art models. The approach not only enhances recommendation accuracy but also provides a framework for understanding how different factors within a knowledge graph influence user-item interactions, making recommendations more interpretable.</p><hr id="62ae2392-571c-47af-9240-2be3e4894adb"/><h2 id="be1f9754-b9ae-44c0-8e12-29a4a4666d36" class="">Technical Aspects</h2><p id="aa5a417a-36ad-477c-859e-0dde53110ab7" class="">The technical solution provided by the KGCR model involves several key components that leverage causal inference to enhance knowledge graph-based recommendation systems. Here&#x27;s a breakdown of these components:</p><h3 id="38726b4c-9e6b-49d5-8a25-38587767f9d5" class=""><strong>1. Causal Graph Construction</strong></h3><p id="076b51aa-e651-4ff0-abc6-50c6bde8f506" class="">KGCR begins by <mark class="highlight-orange_background">constructing a causal graph </mark>that represents the causal relationships among different variables in the recommendation system. These variables include:</p><ul id="4787034a-0bf1-455e-af37-5316dd671f85" class="bulleted-list"><li style="list-style-type:disc"><strong>U (User Preferences on Attributes)</strong>: Represents how user preferences align with certain attributes in items.</li></ul><ul id="6c073660-874b-4474-bf4a-9b6abd5402cb" class="bulleted-list"><li style="list-style-type:disc"><strong>I (Item Representations)</strong>: Describes items based on their attributes extracted from the knowledge graph.</li></ul><ul id="ea818511-d5d1-4c75-b2da-fda182050481" class="bulleted-list"><li style="list-style-type:disc"><strong>A (User’s Interacted Attributes)</strong>: Represents the attributes of items with which a user has previously interacted.</li></ul><ul id="e9783602-968d-44de-bf25-e0b1721fc797" class="bulleted-list"><li style="list-style-type:disc"><strong>K (Structural Information)</strong>: Includes the structural information of the knowledge graph that could influence attribute exposure to users.</li></ul><ul id="a5d4ab00-b976-4fee-9ad2-1aaddc58b0f3" class="bulleted-list"><li style="list-style-type:disc"><strong>S (Similarity Scores)</strong>: Measures the similarity between user preferences and item attributes, used for making recommendations.</li></ul><h3 id="33407322-86a7-4568-bce2-3c71f53ebb99" class=""><strong>2. Causal Intervention</strong></h3><p id="3d7e6fa7-bd98-4667-9ce7-d6c269fc9c80" class="">To mitigate the influence of confounders such as the structural information (K) that may affect the accurate learning of user preferences (U) for attributes (A), KGCR performs causal interventions. This is done using do-calculus, where certain edges in<mark class="highlight-orange_background"> the causal graph are &quot;cut&quot; to simulate a scenario where the confounder’s influence is removed. </mark>This helps in obtaining a more deconfounded estimation of user preferences.</p><h3 id="ea8e2f48-c5f2-48a5-b095-51c3a870e1e7" class=""><strong>3. Counterfactual Inference for Bias Reduction</strong></h3><p id="b1ff0059-8b56-41c2-92e5-3f1ec025d963" class=""><mark class="highlight-orange_background">KGCR uses counterfactual reasoning to address biases in the similarity scores between users and items. </mark>This is achieved by estimating what the similarity score would have been under different hypothetical scenarios (counterfactuals) where the user had not interacted with certain attributes. This helps in isolating and removing the biased effect of these attributes on the similarity score.</p><h3 id="27fccac7-aaac-49a5-9882-cf047c408482" class=""><strong>4. Model Implementation and Optimization</strong></h3><ul id="7ba1331a-ed0b-4de1-9de7-46468c657cdf" class="bulleted-list"><li style="list-style-type:disc"><strong>Knowledge Graph Embeddings</strong>: Initial item and attribute representations are learned using embeddings from the knowledge graph.</li></ul><ul id="d42541e3-c2a4-48d8-97bf-d2caa921a1f4" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background"><strong>Graph Convolutional Networks </strong></mark><strong>(GCN)</strong>: KGCR employs GCNs to refine these embeddings by propagating and aggregating information across the graph structure, enhancing the attribute and item representations with contextual graph-based information.</li></ul><ul id="88eeef7c-553c-464c-8415-a0e97ea0dd8f" class="bulleted-list"><li style="list-style-type:disc"><strong>Debiasing Similarity Scores</strong>: The model computes debiased user-item similarity scores by combining counterfactually adjusted attribute effects with base collaborative filtering signals.</li></ul><h3 id="89288662-67a6-4840-87e0-02cc39055624" class=""><strong>5. Loss Functions and Training</strong></h3><p id="bca6078b-0cfd-4827-90e7-1069c78a7dca" class="">The training of KGCR involves optimizing a loss function that considers both the traditional collaborative filtering loss and a novel counterfactual loss component that aims to minimize the discrepancy caused by biased interactions. The loss function integrates:</p><ul id="d3c62678-4265-4baa-8b7e-e1a93ae6af19" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background"><strong>Bayesian Personalized Ranking (BPR</strong></mark><strong>) Loss</strong>: Optimizes for the correct ranking of items for each user, promoting higher ranks for interacted items over non-interacted ones.</li></ul><ul id="dea3f8a5-e386-4e7d-98f3-9e0ce3116cb7" class="bulleted-list"><li style="list-style-type:disc"><strong>Attribute-Based Similarity Loss</strong>: Ensures that the similarity scores reflect true attribute preferences by penalizing scores that do not align with user interactions.</li></ul><p id="2773d145-03ee-460f-8e33-aa3e5d316d21" class="">By integrating these techniques, KGCR aims to provide more accurate and fair recommendations by understanding and adjusting for the underlying causal relationships within the data. This approach not only improves recommendation quality but also contributes to the transparency and interpretability of the model’s decisions.</p><hr id="6f1fc464-7669-451a-ba3a-a3374ab3491a"/><h2 id="6bd0ea35-0743-4ae1-b07f-9ed0b2b85d88" class="">Neural Model and Structural Details</h2><p id="986f1fbe-284d-411c-ae07-e50ddd69375c" class="">In the KGCR framework, several neural modeling techniques and data representation strategies are employed to optimize the recommendation system. Here are the technical details regarding the neural model usage and data representation in the KGCR:</p><h3 id="73887517-63be-41dd-b801-072c4d58dbb4" class=""><strong>Neural Model Usage</strong></h3><ol type="1" id="610be901-bad1-4bc4-9165-4015f2731b32" class="numbered-list" start="1"><li><strong>Graph Convolutional Networks (GCN)</strong>:<ul id="512a7fd7-9440-44d8-ae00-c4dd4f0da97e" class="bulleted-list"><li style="list-style-type:disc"><strong>Role</strong>: GCNs are <mark class="highlight-orange_background">used to process the knowledge graph dat</mark>a, which helps in capturing the structured relationships between entities (like items and attributes) effectively.</li></ul><ul id="a9c5f9e6-f886-495a-b491-7b3e018d365b" class="bulleted-list"><li style="list-style-type:disc"><strong>Implementation</strong>: The user and item embeddings are refined through multiple layers of graph convolutions, where each layer aggregates neighborhood information to update the node embeddings. This process enhances the representations by incorporating contextual information from the knowledge graph.</li></ul></li></ol><ol type="1" id="935ab4ab-8868-41c5-bc8b-63ae12139ced" class="numbered-list" start="2"><li><strong>Embedding Techniques</strong>:<ul id="6ff0cdfa-dcae-485b-9265-68a09d473f54" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background"><strong>TransE for Initialization</strong></mark><mark class="highlight-orange_background">:</mark> Initial embeddings for entities and relations in the knowledge graph are learned using the TransE model. TransE is a translation-based embedding technique that models relationships by interpreting them as translations operating on the embeddings of the entities.</li></ul><ul id="9b7263bf-aadf-4de1-bac2-2d501d391b83" class="bulleted-list"><li style="list-style-type:disc"><strong>Attribute and Item Representation</strong>: Post initial embedding with TransE, <mark class="highlight-orange_background">further refinement is done using GCN layers</mark>, which help to blend the embeddings with the structural and relational context from the knowledge graph.</li></ul></li></ol><ol type="1" id="7a517d7b-ebb7-4482-8fce-4ae75bcbbfc9" class="numbered-list" start="3"><li><strong>Inner Product for Similarity Calculation</strong>:<ul id="c4dc4356-01d7-458c-836a-2ac8ac572605" class="bulleted-list"><li style="list-style-type:disc"><strong>Use</strong>: After obtaining refined embeddings from the GCNs,<mark class="highlight-orange_background"> the similarity between user embeddings and item embeddings is calculated using the inner product.</mark> This score forms a basis for the recommendation system.</li></ul></li></ol><h3 id="5d4b23db-c0a6-4c0a-9a53-ecf4c2fde650" class=""><strong>Data Representation</strong></h3><ol type="1" id="bebc8665-aa87-4a2c-a45d-852555560c3d" class="numbered-list" start="1"><li><strong>User and Item Embeddings</strong>:<ul id="afd0fade-a390-4be1-8f9f-06e86c53aa4b" class="bulleted-list"><li style="list-style-type:disc">Users and items are represented through embeddings derived from the knowledge graph. The embeddings capture not just the inherent properties of users and items but also their contextual relationships derived from the graph structure.</li></ul></li></ol><ol type="1" id="fe2377d1-1281-45aa-a8fc-86e90c4ace2d" class="numbered-list" start="2"><li><strong>Knowledge Graph Structure</strong>:<ul id="eae536ad-20f3-4882-a27c-543c652a8d97" class="bulleted-list"><li style="list-style-type:disc"><strong>Entities and Relationships</strong>: The knowledge graph comprises entities (items, attributes) and relationships between them. Each entity and relationship is initially embedded using TransE, and these embeddings are further refined through GCNs.</li></ul><ul id="f7a2759f-f51a-4477-ab6c-cfda675d9fb5" class="bulleted-list"><li style="list-style-type:disc"><strong>Graph Layers</strong>: The GCN layers operate over the structured data of the knowledge graph, processing entities and their relationships in layers to refine their representations based on the connectivity patterns.</li></ul></li></ol><h3 id="de9f2381-435b-48f4-a68d-171fef241ce3" class=""><strong>Technical Details of Model Training and Optimization</strong></h3><ol type="1" id="36d7d52e-0730-45f6-9d53-5192738bbd6d" class="numbered-list" start="1"><li><strong>Loss Functions</strong>:<ul id="d878bd71-ea5b-4461-8cb7-6fd625277f82" class="bulleted-list"><li style="list-style-type:disc"><strong>Bayesian Personalized Ranking (BPR) Loss</strong>: This loss is used to optimize the ordering of items such that items interacted with by a user are ranked higher than those not interacted with. It helps in learning personalized ranking for users.</li></ul><ul id="535db4b2-8f0f-444a-b016-ac06e9fa9d30" class="bulleted-list"><li style="list-style-type:disc"><strong>Attribute Similarity Adjustment</strong>: Additional loss components are introduced to adjust for the biases in attribute-based similarity calculations, ensuring that the recommendations reflect true user preferences and are not merely driven by biased or spurious attribute interactions.</li></ul></li></ol><ol type="1" id="1d5a4233-0b7d-4d46-a519-98056235527a" class="numbered-list" start="2"><li><strong>Counterfactual Reasoning</strong>:<ul id="e31bd076-3de1-4f0e-9d2c-421e243211a1" class="bulleted-list"><li style="list-style-type:disc">Counterfactual reasoning is applied to calculate what the similarity scores between users and items would be if certain biases (from user’s previously interacted attributes) were not present. This helps in assessing the direct and indirect effects of attributes on the recommendations, allowing for a debiased estimation of user-item affinities.</li></ul></li></ol><ol type="1" id="2a7bd9e5-2f69-49ea-b7d1-f3452a2c1e31" class="numbered-list" start="3"><li><strong>Optimization</strong>:<ul id="2679548f-9f7e-4cf1-be97-c5dc6604aead" class="bulleted-list"><li style="list-style-type:disc"><strong>Parameter Optimization</strong>: The model parameters are optimized using stochastic gradient descent with the Adam optimizer, which is effective for handling sparse data and large-scale parameter spaces typical of knowledge graphs and recommendation systems.</li></ul></li></ol><p id="c73b89ef-7ecf-405e-a4e7-948ae6f9ce14" class="">This combination of neural network models, sophisticated embedding techniques, and advanced training strategies enables KGCR to effectively handle the complexities of knowledge graph-based recommendation systems while addressing bias and improving interpretability.</p><hr id="0b1ab0e3-14a2-42c0-8bfb-f965512be8db"/><h2 id="77aa9820-a058-4401-9daf-601d5e0febdd" class="">Counterfactual Concept</h2><p id="b3be800c-1a5e-48de-a299-d51747aa4da2" class="">In the KGCR framework, counterfactual reasoning is a critical method used to <mark class="highlight-orange_background">handle biases in the recommendation process,</mark> particularly those stemming from a user&#x27;s previously interacted attributes. Here’s how the counterfactual concept is introduced and implemented in their solution:</p><h3 id="5a48f981-ce4a-47ed-9bf7-6882b28366d0" class=""><strong>Introduction of Counterfactual Reasoning</strong></h3><p id="03bf9562-e4b8-4477-8112-a1b9bedb42e1" class="">Counterfactual reasoning in the context of KGCR is employed to understand and adjust for the <mark class="highlight-orange_background">potential bias that might arise when a user’s historical interactions with certain attributes influence the similarity scores used in recommendations.</mark> The goal is to determine what the similarity score between a user and an item would have been if the user had not interacted with certain biased attributes.</p><h3 id="e471f3ea-83d3-4eae-a197-c2851ec936d5" class=""><strong>Implementation Steps</strong></h3><ol type="1" id="20f1dbf5-07aa-476d-8877-12a5165dd4ba" class="numbered-list" start="1"><li><strong>Constructing the Causal Graph</strong>:<ul id="aa4786a0-9be3-4a00-ac3c-e0437d8e5062" class="bulleted-list"><li style="list-style-type:disc"><strong>Causal Variables</strong>: The causal graph includes variables such as user preferences (U), item attributes (I), interacted attributes (A), and similarity scores (S).</li></ul><ul id="adf394ea-80f0-4caf-8a57-eaefa4f2406f" class="bulleted-list"><li style="list-style-type:disc"><strong>Causal Relationships</strong>: Relationships among these variables are mapped, particularly focusing on how interacted attributes (A) might influence both user preferences (U) and similarity scores (S).</li></ul></li></ol><ol type="1" id="8b409cf9-be75-4254-a672-80e52b3e77f8" class="numbered-list" start="2"><li><strong>Identifying Direct and Indirect Effects</strong>:<ul id="8e5d45ec-4883-48e2-9d8b-3f716338d06d" class="bulleted-list"><li style="list-style-type:disc"><strong>Direct Effects (DE)</strong>: These are the effects that the interacted attributes (A) have directly on the similarity scores (S).</li></ul><ul id="6af71e8c-c262-464d-a80a-f5adce537d65" class="bulleted-list"><li style="list-style-type:disc"><strong>Indirect Effects (IE)</strong>: These effects are mediated through other variables, such as the influence of interacted attributes on user preferences (U), which in turn affect similarity scores (S).</li></ul></li></ol><ol type="1" id="7aa52665-d713-4233-9332-1f87e62a2278" class="numbered-list" start="3"><li><strong>Counterfactual Intervention</strong>:<ul id="d81e3ab3-fa49-4f80-bc8b-dddd191ec328" class="bulleted-list"><li style="list-style-type:disc"><strong>Modification of Attribute Effects</strong>: <mark class="highlight-orange_background">To implement counterfactual reasoning, the model calculates what the similarity scores (S) would look like if the direct effects of the interacted attributes (A) were removed. </mark>This involves estimating the similarity score under a hypothetical or counterfactual scenario where the user interacts with the item but without the bias introduced by specific attributes.</li></ul></li></ol><ol type="1" id="3618fe5c-fb77-43b8-a02a-ddd893192451" class="numbered-list" start="4"><li><strong>Calculation of Counterfactual Scores</strong>:<ul id="64592311-8a92-4532-8ee9-c2784f5f6ac0" class="bulleted-list"><li style="list-style-type:disc"><strong>Counterfactual Inference Formula</strong>: The main counterfactual inference involves computing the &quot;Natural Direct Effect&quot; (NDE) and the &quot;Total Effect&quot; (TE) of the interacted attributes on the similarity scores.</li></ul><ul id="3a7f9cd9-f601-4f48-9bd8-ba95e0761ce2" class="bulleted-list"><li style="list-style-type:disc"><strong>Formula Implementation</strong>: <mark class="highlight-orange_background">The model computes the difference between the factual and counterfactual similarity scores. </mark>Mathematically, this can be expressed as:<p id="19a667e9-b7fd-4fc0-8d0c-2105cd086aa4" class="">𝑇𝐸−𝑁𝐷𝐸=(𝑆factual−𝑆counterfactual)<em>TE</em>−<em>NDE</em>=(<em>S</em>factual−<em>S</em>counterfactual)</p></li></ul><p id="4502aae8-e96b-4b36-8831-6b83f3e81018" class="">where 𝑇𝐸<em>TE</em> is the effect of the interacted attributes under the actual user interactions, and 𝑁𝐷𝐸<em>NDE</em> is the effect of the same attributes if the direct path from the attributes to the similarity scores were blocked.</p></li></ol><ol type="1" id="dcaf6905-6853-4177-95c9-5d18d1161ad1" class="numbered-list" start="5"><li><strong>Adjustment of Scores</strong>:<ul id="c2e0e395-0a66-4434-adf0-299035429289" class="bulleted-list"><li style="list-style-type:disc"><strong>Final Score Calculation</strong>: The adjusted, debiased similarity scores are then calculated by subtracting the estimated direct effects from the total observed effects, yielding a score that reflects what the user&#x27;s preferences would likely be in the absence of the identified biases.</li></ul></li></ol><ol type="1" id="0524e556-1b1c-4690-b9ea-5c35fb5fc2ac" class="numbered-list" start="6"><li><strong>Optimization</strong>:<ul id="27ef584a-7669-4069-b73a-25598867f294" class="bulleted-list"><li style="list-style-type:disc"><strong>Loss Function Incorporation</strong>: The debiased similarity scores are integrated into the model&#x27;s loss function to optimize the overall recommendation accuracy, ensuring that the training process minimizes these biases effectively.</li></ul></li></ol><p id="086de69c-e24f-4b49-956f-e12c5ed39452" class="">Through these steps, KGCR leverages counterfactual reasoning to systematically address and mitigate the influence of bias in recommendations, leading to more accurate and fair user-item matching in the recommendation systems.</p><p id="2b08fb58-b221-48e3-9180-de7e73436cbc" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

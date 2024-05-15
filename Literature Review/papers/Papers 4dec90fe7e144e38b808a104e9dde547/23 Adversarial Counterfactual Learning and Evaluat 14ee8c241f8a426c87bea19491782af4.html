@@ -1,0 +1,681 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>23: Adversarial Counterfactual Learning and Evaluation for Recommender System</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="14ee8c24-1f8a-426c-87be-a19491782af4" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/></div><h1 class="page-title">23: Adversarial Counterfactual Learning and Evaluation for Recommender System</h1><p class="page-description"></p></header><div class="page-body"><p id="086b347a-3d4e-49ad-b779-d2358e308d9d" class="">Features:</p><p id="87cc5919-afae-4d8e-bf6f-8be87c94ec9b" class="">
+</p><p id="bc6c9ff6-10c1-4a6f-99c8-fabfd18219ac" class="">Questions:</p><p id="e23edc1c-4e01-44e0-a95d-8d638c989ff7" class="">
+</p><hr id="5d0e13be-ddc4-47d2-bccc-7aa79a4be08d"/><p id="80071f06-7606-44cf-97ff-4ccb13ddd01e" class="">The authors introduced a counterfactual propensity-weighting approach within a minimax adversarial framework, where a candidate recommendation model (fθ) predicts user preferences, and an adversary model (gψ) characterizes the exposure mechanism. They used neural models like GMF, MLP, and attention-based networks to represent user and item features, applying propensity-weighted loss and adversarial training to mitigate exposure bias and improve recommendation accuracy.</p><hr id="9030ad87-9b09-4026-9025-348d605b4c3c"/><h2 id="df5832ce-67d2-4e97-89bb-d4475dca9cb8" class="">Genearal Summary</h2><p id="96860921-73a2-49d1-96c3-25396c216028" class="">The paper discusses the challenges and limitations of traditional recommender systems, particularly focusing on the issues caused by feedback data being dependent on what products users were exposed to, but not accounting for the underlying exposure mechanisms. It introduces a novel counterfactual modeling framework based on causal inference to address these challenges.</p><p id="d2b3eb8a-613c-4cf3-be8c-fc84fb09315f" class="">Here&#x27;s a breakdown of the key points covered in the paper:</p><ol type="1" id="aea3a21f-5d1e-4489-95f1-52d5d5767460" class="numbered-list" start="1"><li><strong>Problem Statement</strong>: Recommender systems typically rely on user feedback (ratings, clicks) that are biased by the items users have been exposed to. Traditional models struggle because they do not consider how exposure to products influences user feedback.</li></ol><ol type="1" id="2d6e3a0c-6a8a-4b1c-85cd-2b9d0507c23c" class="numbered-list" start="2"><li><strong>Counterfactual Propensity Weighting</strong>: The authors highlight that not accounting for exposure mechanisms leads to biased results. They propose using counterfactual reasoning from causal inference to better model and understand user preferences under different exposure scenarios.</li></ol><ol type="1" id="4adc5d04-021b-4dc5-aec8-e38e4285e5c1" class="numbered-list" start="3"><li><strong>Minimax Empirical Risk Formulation</strong>: To deal with the partial observability of feedback data and the unobserved exposure mechanisms, the authors introduce a minimax risk strategy. This strategy involves an adversarial game between two models—a candidate recommendation model and a model that acts as an adversary by estimating the exposure mechanism.</li></ol><ol type="1" id="56d4b23c-3012-45cf-9067-8ff81eed9862" class="numbered-list" start="4"><li><strong>Adversarial Game</strong>: The dual nature of the problem is converted into an adversarial game between the two models. The adversary model&#x27;s role is to characterize the exposure mechanism, and this interaction is intended to minimize the worst-case scenario of exposure bias.</li></ol><ol type="1" id="f948e221-5828-45de-9748-72fc165d1626" class="numbered-list" start="5"><li><strong>Theoretical Contributions and Simulations</strong>: The paper provides theoretical analyses demonstrating the inconsistencies in traditional supervised learning when applied to recommender systems without considering exposure. Through extensive simulations, the authors show that their approach can handle a wide range of recommendation settings and offers significant improvements over traditional methods.</li></ol><ol type="1" id="43e5efc1-914d-4e61-a1ff-6d48f9d6565b" class="numbered-list" start="6"><li><strong>Empirical Evaluations</strong>: They conduct experiments using synthetic and real data to validate their approach. The results suggest that their counterfactual and adversarial modeling significantly reduces bias and improves the accuracy of the recommender system.</li></ol><p id="b85a17c9-dd72-4ae0-a50b-667a5f106737" class="">Overall, this paper contributes to the field by addressing a critical gap in how recommender systems handle exposure bias, offering a robust framework that incorporates causal inference and adversarial learning to better predict user preferences under realistic scenarios.</p><hr id="ace4c5e8-f1ec-4543-baa3-7efddc569883"/><h2 id="c887b699-8535-4462-aab3-566dfffbb9e0" class="">Technical Aspects</h2><p id="ea9b6b69-8534-4296-a655-f68b7278f73b" class="">The technical solution proposed in the paper involves several key components that integrate ideas from<mark class="highlight-orange_background"> causal inference </mark>and <mark class="highlight-orange_background">adversarial learning</mark> to address <mark class="highlight-orange_background">exposure bias</mark> in recommender systems:</p><ol type="1" id="fe03bd78-0aea-4173-9fae-938e964786d8" class="numbered-list" start="1"><li><strong>Counterfactual Propensity-Weighting</strong>: <mark class="highlight-orange_background">This technique is borrowed from causal inference. </mark>It involves calculating the <mark class="highlight-orange_background">propensity score, which is the probability of an item being exposed to a user given the observed data.</mark> This score helps in reweighting the training data to reflect a more realistic scenario where exposure is independent of user choice, thus mitigating the bias due to observed data only.</li></ol><ol type="1" id="53512095-b9c4-4843-a3bd-d1c9dfa7ba1c" class="numbered-list" start="2"><li><strong>Minimax Empirical Risk Formulation</strong>: The core of their technical solution is<mark class="highlight-orange_background"> the formulation of the learning problem as a minimax optimization problem</mark>. In this framework, one model (the candidate recommendation model) <mark class="highlight-orange_background">tries to predict user preferences as accurately as possible,</mark> while the opposing model (characterizing the exposure mechanism) <mark class="highlight-orange_background">tries to maximize the first model&#x27;s error by manipulating the understanding of the exposure mechanism.</mark> This adversarial setup is meant to ensure that the candidate model is robust against the worst-case scenarios of exposure bias.</li></ol><ol type="1" id="0e976552-a1ec-406f-9080-548ee45ae44e" class="numbered-list" start="3"><li><strong>Adversarial Game Between Two Models</strong>: The dual nature of the problem is expressed through an adversarial game. The adversary (second model) aims to characterize the underlying exposure mechanism <mark class="highlight-orange_background">by adjusting its parameters to maximize the prediction error</mark> of the primary recommendation model under the worst-case exposure scenario. This game leads to a scenario where both models iteratively update themselves to better predict or simulate the exposure, enhancing the robustness and accuracy of the overall system.</li></ol><ol type="1" id="c1b4344c-9e1e-44ab-97ee-98e99916e89a" class="numbered-list" start="4"><li><strong>Theoretical Analysis and Learning Bounds</strong>: The paper provides a rigorous theoretical analysis to support their approach. They prove that traditional supervised learning applied to feedback data (without considering exposure mechanisms) can lead to inconsistent user preference detection. They also derive learning bounds for their adversarial learning setup, indicating how well the models can be expected to perform in general.</li></ol><ol type="1" id="02279674-b56c-493c-a19e-7754348b27b9" class="numbered-list" start="5"><li><strong>Simulation and Empirical Validation</strong>: To validate their approach, the authors conducted extensive simulation studies and empirical evaluations using both synthetic and real datasets. These studies demonstrate that their minimax adversarial model can significantly reduce bias introduced by exposure mechanisms and improve the accuracy and fairness of recommendations.</li></ol><p id="46746087-945f-4cb9-8b78-d73b17f2abbf" class="">This combination of causal inference for exposure adjustment, adversarial learning for robustness, and theoretical underpinnings for consistency makes their approach technically rich and innovative for addressing exposure bias in recommender systems.</p><hr id="2f063e89-16c9-4a40-863a-76c3e18bef04"/><h2 id="a4e02629-6d1b-483c-a24a-38353533cf7f" class="">Neural Model and Structural Details</h2><p id="3224b8f2-aae2-41cd-9f66-085691220ca7" class="">Certainly! Here are the details about the neural models used in the paper, the representation of data, and additional technical aspects:</p><h3 id="80af4f9e-2dce-4bee-81f3-390d0ac257df" class=""><strong>Neural Models Used</strong></h3><ol type="1" id="17c9bd7e-9ae5-4eb3-86e4-32cb7ede54a1" class="numbered-list" start="1"><li><strong>Recommendation Models (fθ and gψ)</strong>:<ul id="f0d003ea-3113-4431-8585-d354b6a0d3b5" class="bulleted-list"><li style="list-style-type:disc"><strong>fθ (Candidate Model)</strong>: This model predicts user preferences and is the primary recommendation model.</li></ul><ul id="dc364d8b-fbd2-4f3d-9d67-69b21a4205a0" class="bulleted-list"><li style="list-style-type:disc"><strong>gψ (Adversary Model)</strong>: This model characterizes the underlying exposure mechanism and acts adversarially to challenge the candidate model.</li></ul></li></ol><p id="fc9b8b27-bb09-40e6-8e26-391ab7f8c452" class="">The specific neural architectures for these models can vary, but common choices include:</p><ul id="3ea99879-20af-409e-8854-a3eff615c1c9" class="bulleted-list"><li style="list-style-type:disc"><strong>Matrix Factorization (MF)</strong>: A baseline collaborative filtering model where users and items are represented by latent factors.</li></ul><ul id="78bf85cd-3cba-4383-a2ed-8a63b3a012b8" class="bulleted-list"><li style="list-style-type:disc"><strong>Generalized Matrix Factorization (GMF)</strong>: An extension of MF with element-wise product between user and item embeddings.</li></ul><ul id="f9e03b4f-b6f3-4513-9745-c17ce3d1b391" class="bulleted-list"><li style="list-style-type:disc"><strong>Multilayer Perceptron (MLP)</strong>: A feedforward neural network with multiple layers to capture non-linear interactions between users and items.</li></ul><ul id="eb2cb0e3-dcc2-47c7-a070-03eddf2c44f1" class="bulleted-list"><li style="list-style-type:disc"><strong>Neural Collaborative Filtering (NCF)</strong>: Combines GMF and MLP for better representation power.</li></ul><ul id="e1867be7-1b4f-4d86-a492-79a7992ac49f" class="bulleted-list"><li style="list-style-type:disc"><strong>Self-Attentive Sequential Model (Attn)</strong>: Uses self-attention mechanisms to capture sequential dependencies in user interactions.</li></ul><h3 id="b72da618-b38a-445a-a742-0685d9278d3e" class=""><strong>Data Representation</strong></h3><ol type="1" id="d3286959-ab8f-402b-9bbd-572cb4c9b9cd" class="numbered-list" start="1"><li><strong>User and Item Features</strong>:<ul id="1e46bfcc-d774-4f2d-b854-ac86c19b77e2" class="bulleted-list"><li style="list-style-type:disc"><strong>User Feature Vector (xu)</strong>: Represents user-specific information. It could include user ID, demographic features, and past interaction history encoded as embeddings.</li></ul><ul id="91e27080-3608-459e-a9a1-9b2d593ffdc3" class="bulleted-list"><li style="list-style-type:disc"><strong>Item Feature Vector (zi)</strong>: Represents item-specific information. It could include item ID, category, textual descriptions, and other metadata encoded as embeddings.</li></ul></li></ol><ol type="1" id="0ec6d241-9d84-44b3-b8fa-f3278d023534" class="numbered-list" start="2"><li><strong>Exposure Status (Ou,i)</strong>:<ul id="bc7e04f0-4020-441d-b803-ea0d425f98b3" class="bulleted-list"><li style="list-style-type:disc">A binary variable indicating whether a user was exposed to an item (1 if exposed, 0 otherwise).</li></ul></li></ol><ol type="1" id="1ce8fa60-a73e-4b88-8031-0b279852c515" class="numbered-list" start="3"><li><strong>Feedback (Yu,i)</strong>:<ul id="434bb9bc-4308-4e84-b529-9c1e1e4b9533" class="bulleted-list"><li style="list-style-type:disc">Implicit Feedback: Binary variable indicating whether the user interacted with the item (e.g., click, purchase).</li></ul><ul id="6d54f532-549b-45a5-87a8-de6e4eb9ae2d" class="bulleted-list"><li style="list-style-type:disc">Explicit Feedback: Ratings given by the user to the item.</li></ul></li></ol><h3 id="f684d70f-f10a-4a0c-8a07-0d057899035a" class=""><strong>Technical Details</strong></h3><ol type="1" id="9b70858d-3847-4247-9b4d-0166c4fee7c9" class="numbered-list" start="1"><li><strong>Propensity-Weighted Loss</strong>:<ul id="689f69b9-b7fc-474a-8470-32b0494a3edc" class="bulleted-list"><li style="list-style-type:disc">The loss function is adjusted using propensity scores to reweight the observed feedback data. The propensity score <em>p</em>(<em>Ou</em>,<em>i</em>=1∣<em>xu</em>,<em>zi</em>) is used to ensure the learning process accounts for the non-random exposure.<p id="b09f565e-c62c-430f-aaef-ba7db7d36bdd" class="">𝑝(𝑂𝑢,𝑖=1∣𝑥𝑢,𝑧𝑖)</p></li></ul></li></ol><ol type="1" id="89745689-04c4-452c-abc3-a13b50659486" class="numbered-list" start="2"><li><strong>Minimax Formulation</strong>:<ul id="1d361889-b596-47e4-8d4c-697f611abcb9" class="bulleted-list"><li style="list-style-type:disc">The learning problem is formulated as a minimax game:<figure id="7c542f50-7a60-4110-983d-f30c39bfbcf4" class="image"><a href="23%20Adversarial%20Counterfactual%20Learning%20and%20Evaluat%2014ee8c241f8a426c87bea19491782af4/Untitled.png"><img style="width:438.0133972167969px" src="23%20Adversarial%20Counterfactual%20Learning%20and%20Evaluat%2014ee8c241f8a426c87bea19491782af4/Untitled.png"/></a></figure></li></ul><ul id="20e5be0a-a4fb-4cc5-a960-0bc78b9d5245" class="bulleted-list"><li style="list-style-type:disc">𝑊𝑐<em>Wc</em> denotes the Wasserstein distance, used to regularize the adversary model <em>gψ</em>.<p id="09950f63-67b8-4763-8873-78819f6f81ae" class="">𝑔𝜓</p></li></ul></li></ol><ol type="1" id="4a4bca68-8793-410a-b5ae-2d2e89e19905" class="numbered-list" start="3"><li><strong>Adversarial Training</strong>:<ul id="7d9479e7-11f2-4de6-876a-96c43b76f61d" class="bulleted-list"><li style="list-style-type:disc">The models <em>fθ</em> and <em>gψ</em> are trained in an adversarial manner, where <em>fθ</em> aims to minimize the error, and <em>gψ</em> tries to maximize it by simulating the worst-case exposure mechanism.<p id="1866fa10-80b1-480b-b9eb-73621ed5b0e4" class="">𝑓𝜃</p><p id="1d69dbdf-c79e-471c-af39-87e183d0e3ec" class="">𝑔𝜓</p><p id="faf7c188-407b-44e4-9fb4-ba82878637da" class="">𝑓𝜃</p><p id="1213c614-2bde-404d-9174-0f9ca42ed010" class="">𝑔𝜓</p></li></ul></li></ol><ol type="1" id="78907b18-34d7-4b10-b2dc-28b1fa05c04e" class="numbered-list" start="4"><li><strong>Learning Algorithm</strong>:<ul id="6ddc92c2-5d5d-4d3c-93ad-de05439a13c2" class="bulleted-list"><li style="list-style-type:disc">They use a two-timescale gradient descent-ascent algorithm for training. <em>fθ</em> and <em>gψ</em> are updated iteratively with different learning rates to ensure stable training dynamics.<p id="2b777686-029e-445f-8f4b-87426fe60fe8" class="">𝑓𝜃</p><p id="fab7d0b7-1698-47c1-beac-908961ab40d5" class="">𝑔𝜓</p></li></ul></li></ol><ol type="1" id="634710a7-7dba-4a3e-8d3d-e22e6c565dc6" class="numbered-list" start="5"><li><strong>Evaluation Metrics</strong>:<ul id="3d12b2d3-d146-41fd-ada0-351004b25015" class="bulleted-list"><li style="list-style-type:disc"><strong>Hit Rate (Hit@k)</strong>: Measures whether the true item is among the top-k recommendations.</li></ul><ul id="b2092c45-28cf-42ba-8945-81e5f0a24e4a" class="bulleted-list"><li style="list-style-type:disc"><strong>Normalized Discounted Cumulative Gain (NDCG@k)</strong>: Measures the ranking quality of the recommendations, giving higher scores to hits at top positions.</li></ul></li></ol><h3 id="e2b391a4-0bd5-448f-9d73-53bbb13380ac" class=""><strong>Implementation Steps</strong></h3><ol type="1" id="b64cda14-3de1-4241-abeb-c832bc092bb5" class="numbered-list" start="1"><li><strong>Initial Setup</strong>:<ul id="380f0876-ad61-4969-84af-ed6be95aa229" class="bulleted-list"><li style="list-style-type:disc">Initialize user and item embeddings.</li></ul><ul id="357e5388-80c2-4c3c-8098-cad2909a5014" class="bulleted-list"><li style="list-style-type:disc">Precompute propensity scores using an initial model.</li></ul></li></ol><ol type="1" id="fc81db3e-367d-45ce-958c-86f884b04bc7" class="numbered-list" start="2"><li><strong>Model Training</strong>:<ul id="b2cbd5b7-0ddd-4b92-8b6b-97fa39f53da4" class="bulleted-list"><li style="list-style-type:disc"><strong>Stage 1</strong>: Train the adversary model <em>gψ</em> to estimate the exposure mechanism.<p id="5c3226f3-28ac-47df-88df-9066524e9145" class="">𝑔𝜓</p></li></ul><ul id="a74667a0-8214-4b32-ad68-38776247ee8b" class="bulleted-list"><li style="list-style-type:disc"><strong>Stage 2</strong>: Train the candidate model <em>fθ</em> using the propensity-weighted loss, with <em>gψ</em> providing the adversarial adjustments.<p id="e975b99c-1e6e-4774-b30a-c555660b892d" class="">𝑓𝜃</p><p id="1aa6bc5a-977b-4966-bd3c-fbebe1ef217b" class="">𝑔𝜓</p></li></ul></li></ol><ol type="1" id="3affff1a-08de-424d-9bf7-c06f81e21c05" class="numbered-list" start="3"><li><strong>Regularization</strong>:<ul id="1660f54e-4685-4d07-bebf-46e013c1f7b4" class="bulleted-list"><li style="list-style-type:disc">Use the Wasserstein distance as a regularizer to keep <em>gψ</em> close to the true exposure mechanism.<p id="66001e7f-c99b-4368-baaa-130ea4439db4" class="">𝑔𝜓</p></li></ul></li></ol><ol type="1" id="d4f1a7fe-2e11-41bd-a816-83a951806aa9" class="numbered-list" start="4"><li><strong>Dual Problem Relaxation</strong>:<ul id="f3828afc-cd60-40da-8984-76d434b48298" class="bulleted-list"><li style="list-style-type:disc">Convert the primal minimax problem into a dual problem, making it more tractable for optimization.</li></ul></li></ol><ol type="1" id="68e981be-66ea-4834-81e1-c749bb99b29d" class="numbered-list" start="5"><li><strong>Online Evaluation</strong>:<ul id="53d0e7fb-8495-4d68-b938-235e9a36612b" class="bulleted-list"><li style="list-style-type:disc">Validate the trained models using real-world user interaction data and compare the performance with online A/B tests.</li></ul></li></ol><p id="8f0d6224-a952-4257-9a31-fed7c6ebbf50" class="">In summary, the authors use a combination of advanced neural architectures for both candidate and adversary models, represent users and items with rich feature vectors, adjust for exposure bias using propensity-weighted losses, and optimize the models in an adversarial framework to ensure robust and accurate recommendations.</p><hr id="f42cd798-0a13-47b6-9f08-a22f8b5a78ed"/><h2 id="15902788-a9dd-4bca-ae6e-1449a7949ba3" class="">Counterfactual Concept</h2><p id="614fd695-1664-4961-a1d9-6cb67fcb9b11" class="">The counterfactual concept is central to the authors&#x27; solution for addressing exposure bias in recommender systems. Here&#x27;s how it is introduced and implemented:</p><div><ol type="1" id="3145539d-f772-4991-83c6-04cd657c5a3f" class="numbered-list" start="1"><li><strong>Counterfactual Modeling</strong>: The authors employ counterfactual reasoning to answer &quot;what if&quot; questions regarding user feedback. Specifically, <mark class="highlight-orange_background">they ask what the feedback would have been if the user had been exposed to different items.</mark> This approach helps in understanding the causal relationships between exposure and user feedback.</li></ol></div><ol type="1" id="b34b65a1-3704-46d7-80d5-496ab31f3eab" class="numbered-list" start="1"><li><strong>Propensity Scores</strong>: To implement counterfactuals, the authors use propensity scores from causal inference. The propensity score is the probability of an item being exposed to a user, given the observed features. This score helps in reweighting the observed data to simulate a scenario where exposure is random, thus removing the bias introduced by the non-random exposure.</li></ol><ol type="1" id="fbcde4fa-77f1-4081-a4fe-930211d4520c" class="numbered-list" start="2"><li><strong>Propensity-Weighted Loss</strong>: They incorporate these propensity scores into a propensity-weighted loss function. This function adjusts the importance of each observed feedback instance based on the likelihood of the exposure, effectively simulating a counterfactual scenario where all items have an equal chance of being exposed.</li></ol><ol type="1" id="41b104b8-fb52-4bb9-81e0-bd8ed3423f2f" class="numbered-list" start="3"><li><strong>Minimax Adversarial Framework</strong>: The counterfactual reasoning is further strengthened by embedding it within a minimax adversarial framework. The recommendation model (primary model) is trained to minimize the prediction error, while an adversary model is trained to maximize this error by simulating the worst-case exposure mechanism. This adversarial setup ensures that the recommendation model learns to be robust against potential biases in the exposure.</li></ol><ol type="1" id="f2c74dc2-bd52-4027-88d0-c5f495084c21" class="numbered-list" start="4"><li><strong>Dual Problem and Adversarial Game</strong>: They transform the minimax problem into a dual form, where the relaxation of the dual problem is expressed as an adversarial game between two recommendation models. The adversary (second model) characterizes the underlying exposure mechanism, and the primary model (candidate recommendation model) is optimized against this adversary. This setup implicitly accounts for counterfactual scenarios by making the primary model robust to different possible exposure mechanisms.</li></ol><ol type="1" id="6104d3d1-8250-4c8e-8b5f-bef363e2b1b4" class="numbered-list" start="5"><li><strong>Theoretical Guarantees</strong>: The authors provide theoretical analysis to show that their approach leads to consistent estimates of user preferences by correctly accounting for the exposure mechanism. They derive generalization bounds for the learning process, ensuring that the model remains robust under various counterfactual scenarios.</li></ol><ol type="1" id="ffc8ae24-572d-4593-b8b8-965ae2bda56a" class="numbered-list" start="6"><li><strong>Empirical Validation</strong>: Through simulations and real-world experiments, they demonstrate that models trained using their counterfactual and adversarial framework perform better in terms of reducing bias and improving recommendation accuracy. These experiments validate the practical utility of their counterfactual approach.</li></ol><p id="c8998b42-9933-4468-82c4-aa4fe7924e95" class="">In summary, the counterfactual concept is introduced through the use of propensity scores to reweight observed data and is implemented within a robust adversarial framework that optimizes for worst-case exposure scenarios, ensuring that the recommendation model accurately captures user preferences under various hypothetical exposures.</p><p id="cd9683c3-05e0-4e69-bdf1-97ff9d008cbb" class="">
+</p><p id="9ac1e361-22c1-4db7-a9ff-97921262a82d" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

@@ -1,0 +1,679 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>14: Incorporating prior knowledge from counterfactuals into knowledge graph reasoning</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="f80aa522-ff30-43af-97b7-c4049ffa8120" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/></div><h1 class="page-title">14: Incorporating prior knowledge from counterfactuals into knowledge graph reasoning</h1><p class="page-description"></p></header><div class="page-body"><p id="4be41e0a-15c2-44bd-aad5-b6eb3e80a90c" class="">Features:</p><ul id="1eb85248-ec18-4491-8808-96fce373f2fa" class="bulleted-list"><li style="list-style-type:disc">Reinforcement learning</li></ul><p id="53ef2ddc-a063-46c1-9672-e2a8a83c90f7" class="">Questions:</p><p id="0fcc40b6-9645-45a5-a042-3edb83a5f21b" class="">
+</p><hr id="78a67148-137d-4398-af6c-5612956e928b"/><p id="bc81d332-c3f3-4fa1-bd77-85847135d356" class="">In this research, the authors introduced a <mark class="highlight-orange_background">novel approach to knowledge graph reasoning</mark> by <mark class="highlight-orange_background">generating counterfactual scenarios to assign importance weights to relationships within the graph. </mark>These weights are used as prior knowledge to guide a reinforcement learning-based reasoning model, enhancing its ability to efficiently and accurately predict missing links by combining the statistical strengths of counterfactual analysis with the adaptive capabilities of neural networks. This method significantly improves the performance of multi-hop reasoning tasks, especially over longer paths and complex queries.</p><hr id="54cfea8a-397c-48ca-8546-2b4538aca3d5"/><h2 id="cef8ef4d-094f-4ffd-9066-5964e74b07c5" class="">Genearal Summary</h2><p id="c793f399-7fba-4e0f-98c2-14c35239252a" class="">The paper explores <mark class="highlight-orange_background">enhancing knowledge graph reasoning</mark> using <mark class="highlight-orange_background">counterfactuals </mark>to extract and utilize prior knowledge within the graph. Traditional knowledge graph reasoning <mark class="highlight-orange_background">aims to identify missing links within the graph</mark>, which is essential for applications like question answering and language modeling. However,<mark class="highlight-orange_background"> these methods often ignore the inherent prior knowledge in the graph.</mark></p><p id="e57896a2-d3db-4b67-b11e-9d880b353d41" class="">In response, this research introduces a <mark class="highlight-orange_background">novel approach by constructing counterfactual scenarios to assign weights to different relationships in the graph.</mark> These weights <mark class="highlight-orange_background">represent the importance of relationships in reasoning tasks</mark> and are used as prior knowledge. The model then integrates this knowledge with reinforcement learning to improve reasoning performance.</p><p id="415bc95b-30fe-46ac-a52e-051fcbf84f93" class="">Key features of the approach include:</p><ol type="1" id="962646ed-87b9-49f7-88f9-88a076f0024b" class="numbered-list" start="1"><li><strong>Counterfactual Weight Assignment</strong>: <mark class="highlight-orange_background">Assigning weights to relationships based on counterfactual scenarios</mark>, which helps in identifying which connections are more significant for specific reasoning paths.</li></ol><ol type="1" id="ab2a86f5-15ff-4f70-862c-83094c89abf3" class="numbered-list" start="2"><li><strong>Combination of Prior Knowledge and Neural Networks</strong>: Using the weighted relationships as prior knowledge alongside a neural network to enhance the reasoning process, especially in multi-hop reasoning tasks where path length can degrade performance.</li></ol><ol type="1" id="2b070bda-a44f-4a73-a739-636b7c002583" class="numbered-list" start="3"><li><strong>Experimental Validation</strong>: The method is validated across three large datasets, showing that the prior knowledge extracted from counterfactuals significantly improves the reasoning models&#x27; effectiveness compared to traditional methods.</li></ol><p id="cd1926f6-562e-43cb-a292-5d9568f3fc89" class="">The paper&#x27;s innovation lies in its<mark class="highlight-orange_background"> use of counterfactuals to extract semantically meaningful and statistically significant prior knowledge</mark>, which is then effectively utilized to augment the reasoning capabilities of knowledge graphs. This approach not only improves accuracy but also aids in maintaining performance across varied path lengths, addressing a common limitation in multi-hop reasoning tasks.</p><hr id="e1a04abc-aa9e-48ce-a63b-5674e92cbc44"/><h2 id="0c0b2dd0-efa0-413e-b758-a607bb3b2b4d" class="">Technical Aspects</h2><p id="2323ff12-8dc9-463f-898f-3f21f602dc8e" class="">The technical solution proposed in the paper revolves around several key components that collectively enhance the reasoning capabilities of knowledge graphs<mark class="highlight-orange_background"> using counterfactual-based prior knowledge</mark> and <mark class="highlight-orange_background">reinforcement learning</mark>. Here’s a breakdown of the technical aspects:</p><ol type="1" id="c8aadc7f-4dd9-4ad0-a9b2-4e570a48e932" class="numbered-list" start="1"><li><strong>Counterfactual Construction and Weight Assignment</strong>:<ul id="3a447d0d-4b7b-433f-90dc-9515825ad6e8" class="bulleted-list"><li style="list-style-type:disc"><strong>Counterfactuals</strong> are <mark class="highlight-orange_background">hypothetical scenarios created by altering some aspects of a given fact or path within the knowledge graph to see how such changes would affect</mark> the reasoning outcome.</li></ul><ul id="8f96f4bb-fbd7-492c-a2ac-c8f0534716ea" class="bulleted-list"><li style="list-style-type:disc">In this approach, counterfactuals are used to evaluate the importance of different relationships in a path. For instance, by changing one relationship in a path and observing how the target relationship (query relation) changes, <mark class="highlight-orange_background">the importance of the original relationship can be inferred.</mark></li></ul><ul id="44d91fde-c4db-497b-9c07-c619ba09e6ef" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background">Weights are assigned to relationships based on their observed importance from the counterfactual analysis. </mark>These weights represent the likelihood that a particular relationship will contribute significantly to correctly reasoning about a query.</li></ul></li></ol><ol type="1" id="edaf8e5f-23a5-4dff-bb6a-f06c0719a820" class="numbered-list" start="2"><li><strong>Prior Knowledge Extraction</strong>:<ul id="a79d0bd4-7ebd-4314-8359-16bfbc1dc9b6" class="bulleted-list"><li style="list-style-type:disc">The importance weights derived from counterfactuals are treated as prior knowledge. This knowledge indicates which relationships are most crucial for various types of queries, independent of the specific path length or complexity.</li></ul><ul id="a60fe773-507f-4b37-9699-e40bf5b942db" class="bulleted-list"><li style="list-style-type:disc">This prior knowledge is stored systematically, likely in a structured format such as a dictionary, where each key-value pair corresponds to a relationship and its importance weight, respectively.</li></ul></li></ol><ol type="1" id="739b4899-b4d0-46bf-976a-db31bc71d397" class="numbered-list" start="3"><li><strong>Reinforcement Learning-Based Reasoning Model</strong>:<ul id="0022ecaf-05f8-4f81-81ce-bfad75ef1358" class="bulleted-list"><li style="list-style-type:disc">The reasoning model is built upon a reinforcement learning framework where the agent navigates the knowledge graph by choosing paths that lead to the correct answers to queries.</li></ul><ul id="4f971f69-eef8-49d6-bbc1-5f5cb58f30d4" class="bulleted-list"><li style="list-style-type:disc"><strong>Environment Setup</strong>: The knowledge graph itself acts as the environment where states are defined by the nodes (entities) and actions are the transitions (relationships) between these nodes.</li></ul><ul id="5563d953-594c-4ced-9620-5d30a4a4499b" class="bulleted-list"><li style="list-style-type:disc"><strong>Action Selection</strong>: At each step, the agent selects an action (relationship) based on a policy that combines the prior knowledge weights and the outputs from a neural network. The decision to rely on prior knowledge or neural output is influenced by a threshold parameter that balances between the two.</li></ul><ul id="aefcc85c-812a-42af-9193-4c50ecb4712c" class="bulleted-list"><li style="list-style-type:disc"><strong>Policy Network</strong>: The policy network guides the selection of actions. It uses both the history of actions taken (encoded using an LSTM for sequential memory) and the current state&#x27;s available actions weighted by the prior knowledge.</li></ul></li></ol><ol type="1" id="d3c6e4cb-fb04-4360-9576-5eb968976b4f" class="numbered-list" start="4"><li><strong>Integration of Prior Knowledge and Neural Decisions</strong>:<ul id="71701223-bc71-4c7b-a8a7-580eaec0f4cd" class="bulleted-list"><li style="list-style-type:disc">The model uses a threshold-based mechanism to decide whether to trust the statistically derived prior knowledge or defer to the neural network&#x27;s judgment. If the weight of a relationship (as given by prior knowledge) is above a certain threshold, it is selected; otherwise, the neural network’s output determines the next action.</li></ul><ul id="01a22216-f3ba-4d1f-be8b-f04e6cd339d4" class="bulleted-list"><li style="list-style-type:disc">This hybrid approach allows the model to leverage the robustness of neural networks while also utilizing the interpretability and specific guidance provided by prior knowledge.</li></ul></li></ol><ol type="1" id="9439660d-f898-41c0-96b0-2bc80c7b4f1b" class="numbered-list" start="5"><li><strong>Experimental Validation</strong>:<ul id="6d3506ee-3d4e-4eb6-bc33-82ec7a8bd326" class="bulleted-list"><li style="list-style-type:disc">The effectiveness of this model is validated through experiments on standard datasets like WN18RR, NELL-995, and FB15k-237, using metrics such as Hits@N, MRR, and MAP. The results demonstrate that integrating counterfactual-derived prior knowledge significantly improves the performance over traditional multi-hop reasoning methods, particularly in maintaining robustness over longer path lengths.</li></ul></li></ol><p id="3213be96-34ee-4948-924d-3d4a26020399" class="">By combining counterfactual analysis with reinforcement learning, the proposed solution not only enhances the model&#x27;s reasoning capabilities but also improves its interpretability and adaptability to complex queries in large-scale knowledge graphs.</p><hr id="804ddbbb-b07b-44e3-840d-1e86ec768d4a"/><h2 id="13c25910-86c6-4511-8185-d28fb31494d8" class="">Neural Model and Structural Details</h2><p id="b2eb3784-5de0-4ca7-9a40-1f15258c54ab" class="">In the described paper, the authors employ several neural models and data representation techniques to enhance the effectiveness of their knowledge graph reasoning approach. Here are the key technical details, including the use of embeddings:</p><h3 id="6d9d99ee-35fe-4e01-ba74-844c4569cbd4" class=""><strong>Neural Model</strong></h3><ol type="1" id="ae353307-55f5-4250-be99-e42caa5ada5a" class="numbered-list" start="1"><li><strong>Reinforcement Learning (RL)</strong>:<ul id="c0a4964e-535e-435e-bbb9-c5544992ce5a" class="bulleted-list"><li style="list-style-type:disc">The core of the neural model is based on<mark class="highlight-orange_background"> reinforcement learning</mark>, particularly using an agent that navigates the knowledge graph by selecting paths that are likely to lead to the correct answers for given queries.</li></ul><ul id="257529ca-928a-4c11-9357-548c17787b90" class="bulleted-list"><li style="list-style-type:disc">The RL model operates in a partially observed Markov decision process, where the states are defined by the current node in the graph, and actions are transitions (relationships) to other nodes.</li></ul></li></ol><ol type="1" id="bfc66ff2-718a-4eba-92f1-497e0ebb1365" class="numbered-list" start="2"><li><strong>Policy Network</strong>:<ul id="dad04f39-b8a3-4e20-a113-81195172b0b4" class="bulleted-list"><li style="list-style-type:disc">A policy network guides the action selection process. This network likely includes components like Long Short-Term Memory (LSTM) networks to encode the history of actions (paths taken) and to maintain a memory of past decisions, which is crucial for sequential decision-making in multi-hop reasoning.</li></ul><ul id="bf786f3e-9019-4f34-8e2c-4d86efb4bc69" class="bulleted-list"><li style="list-style-type:disc">The policy network uses the combination of prior knowledge (from counterfactual analysis) and current state data to make decisions on which edge to select next.</li></ul></li></ol><h3 id="5cf28c7a-0eb2-4d0d-b4a1-316d88716f93" class=""><strong>Data Representation</strong></h3><ol type="1" id="396debe8-4e3f-49cb-9dc1-6b24b820ed81" class="numbered-list" start="1"><li><strong>Embeddings</strong>:<ul id="f88e924d-f6ab-4ee9-8278-7d23ebf862cf" class="bulleted-list"><li style="list-style-type:disc"><strong>Entity and Relationship Embeddings</strong>: The model utilizes embeddings for both entities and relationships. These embeddings are vector representations that capture the semantic properties of entities and the types of relationships between them. Embeddings allow the model to process and utilize large amounts of relational data efficiently.</li></ul><ul id="f75c6cc9-7a25-4a01-871a-d3d124c52bac" class="bulleted-list"><li style="list-style-type:disc"><strong>Action Embeddings</strong>: Actions (edges in the knowledge graph) are also represented as embeddings, which are used in the policy network to decide the next steps in the reasoning path.</li></ul></li></ol><ol type="1" id="3fe8395c-948e-45cc-9789-1fc21bd4f4ae" class="numbered-list" start="2"><li><strong>Embedding Dimensions and Model Parameters</strong>:<ul id="86fa34cf-3c66-4143-9e3e-18ff5b0fc121" class="bulleted-list"><li style="list-style-type:disc">The specifics of embedding dimensions and other model parameters are typically optimized based on the dataset and the complexity of the tasks. The paper likely includes experiments to determine the best settings for these parameters.</li></ul></li></ol><ol type="1" id="8c174905-9fd1-4bfd-a9c4-d012993ff9a4" class="numbered-list" start="3"><li><strong>Combination of Prior Knowledge and Neural Output</strong>:<ul id="bbd1b6b9-b975-4793-8e3f-524f07783e91" class="bulleted-list"><li style="list-style-type:disc">The model combines the weights obtained from counterfactual prior knowledge with the neural network&#x27;s outputs to make decisions. The integration is likely done using a threshold-based system where actions are chosen based on their weights if they exceed a certain threshold; otherwise, the neural network&#x27;s decision is used.</li></ul></li></ol><h3 id="0c12d5a6-613c-4fb9-9310-f19c98e7bcff" class=""><strong>Use of Counterfactuals and Prior Knowledge</strong></h3><ul id="d27f50d4-9ae3-4d0b-b20b-ca83d5731eee" class="bulleted-list"><li style="list-style-type:disc"><strong>Counterfactuals</strong> are used to generate alternative scenarios by modifying relationships in the knowledge graph. Comparing the outcomes of these scenarios with actual outcomes allows the model to assign weights to each relationship, indicating their importance for accurate reasoning.</li></ul><ul id="e4b01072-4504-4510-ab39-2a12433ae82e" class="bulleted-list"><li style="list-style-type:disc">These weights are then integrated as prior knowledge into the RL model, helping to guide the decision-making process more effectively by prioritizing more influential relationships.</li></ul><p id="5f675791-b5f1-4e45-9c19-228880091ad8" class="">In summary, the approach combines sophisticated neural modeling techniques, including reinforcement learning and LSTM for sequential data processing, with an innovative use of embeddings for entities and relationships, all enhanced by the strategic use of counterfactual-derived prior knowledge to improve reasoning over knowledge graphs.</p><hr id="28eb9427-a0c8-4445-a1d0-5e25a20adbd5"/><h2 id="9605bfaf-b070-41ee-a0eb-448284857f91" class="">Counterfactual Concept</h2><p id="a5fdda02-ea6d-440c-a26b-c049fe31c234" class=""><mark class="highlight-orange_background">The concept of counterfactuals in the solution described in the paper is utilized to assess the importance of relationships in the knowledge graph for reasoning tasks.</mark> Here’s how counterfactuals are introduced and implemented in their approach:</p><h3 id="4e577f09-7a43-4fbb-b7f9-f7ca52385a0b" class=""><strong>Introduction of Counterfactuals</strong></h3><p id="a8902100-6a6a-4b5e-8d56-41ea587b9d18" class="">Counterfactual reasoning in this context involves modifying some aspects of a given factual path in the knowledge graph to create hypothetical scenarios. These modifications help in evaluating how changes in relationships (edges) affect the outcome of a reasoning process. The basic idea is to ask &quot;what-if&quot; questions: For example, if a certain relationship in a path is changed, what would be the impact on the query’s outcome?</p><h3 id="a1665e99-5a43-41a4-9124-7b17d40705a6" class=""><strong>Implementation of Counterfactuals</strong></h3><p id="d7e365e4-2eb3-44db-bf0c-2dbac65b64f9" class="">The implementation of counterfactuals in the proposed model involves several steps:</p><ol type="1" id="eee7bc60-3c9a-4f18-830a-8b95232b208c" class="numbered-list" start="1"><li><strong>Counterfactual Path Generation</strong>:<div><ul id="08db8215-0e42-4a7a-86bc-83da44cafa2d" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background">For a given factual path in the knowledge graph that answers a query, the model generates counterfactual paths by changing one relationship at a time along the path.</mark></li></ul></div><ul id="0861f182-a9bd-4ec6-a07d-f27cfddd0bee" class="bulleted-list"><li style="list-style-type:disc">These changes are made to see how the answer to the query changes when different relationships are altered. For example, if the original path involves the relationships <em>A</em>→<em>B</em>→<em>C</em>, a counterfactual might involve changing <em>B</em> to <em>B</em>′ to see if the path still leads to <em>C</em>.<p id="a9e08e5d-97b8-4ee5-b2f6-9936745e8285" class="">𝐴→𝐵→𝐶</p><p id="140c5a5b-f428-40bd-868a-a35af96966ec" class="">𝐵</p><p id="98bdb606-7a2a-4c9b-b0e4-cf3bcbd6a0f3" class="">𝐵′</p><p id="70063220-390e-4a2b-8ba6-f4aec4301f30" class="">𝐶</p></li></ul></li></ol><ol type="1" id="ca3bc944-f00a-42a7-b31d-f31776de1211" class="numbered-list" start="2"><li><strong>Weight Assignment Based on Counterfactual Analysis</strong>:<ul id="478e577d-3860-40d2-958b-917b98868e92" class="bulleted-list"><li style="list-style-type:disc">Each relationship in the graph is assessed based on how changing it affects the reasoning outcome. <mark class="highlight-orange_background">If altering a relationship frequently leads to incorrect answers, it suggests that the original relationship is crucial for correct reasoning in those cases.</mark></li></ul><ul id="c1d80527-4510-4669-9d14-295977396360" class="bulleted-list"><li style="list-style-type:disc">The model statistically analyzes these impacts to assign weights to each relationship. These weights reflect the importance or reliability of each relationship in contributing to correct answers across various queries.</li></ul></li></ol><ol type="1" id="f39b3c1e-5181-4e56-a122-0bdb638c1fe3" class="numbered-list" start="3"><li><strong>Prior Knowledge Extraction</strong>:<ul id="690d3c3e-0568-4440-bf32-3abac84dee5f" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background">The weights derived from the counterfactual analysis are used as prior knowledge. This means that the model &#x27;learns&#x27; from hypothetical scenarios about which relationships are generally more important for reasoning.</mark></li></ul><ul id="75264f1f-501e-418f-94c8-a5e3d5c494cd" class="bulleted-list"><li style="list-style-type:disc">This prior knowledge is then encoded into a structured format, such as a dictionary where each key (relationship) is associated with a weight that signifies its importance.</li></ul></li></ol><ol type="1" id="212c2f9e-94e3-4b1a-810e-ed95f9a84a47" class="numbered-list" start="4"><li><strong>Utilization in the Reasoning Model</strong>:<ul id="60e330d9-1c4c-4892-bc25-d5b228b50a42" class="bulleted-list"><li style="list-style-type:disc">When the model encounters a new query, it uses the extracted prior knowledge to guide the reasoning process. The agent in the reinforcement learning setup uses these weights to prioritize which relationships to follow when constructing reasoning paths.</li></ul><ul id="2955a2b8-b43f-49ea-ac0b-6e83dcc7009f" class="bulleted-list"><li style="list-style-type:disc">The model decides whether to rely on the counterfactual-derived weights or the neural network outputs by using a threshold mechanism. If the weight of a relationship exceeds a predefined threshold, the relationship is selected; otherwise, the decision is made based on the neural network’s recommendation.</li></ul></li></ol><h3 id="5a490141-2710-45fc-b580-e5f7cce0e5be" class=""><strong>Impact of Counterfactual Implementation</strong></h3><p id="f9719ab6-6352-41fe-bf2b-e48459a6b6e0" class="">The implementation of counterfactual reasoning allows the model to:</p><ul id="6e540784-26be-4a7c-98a2-0b26fa7c0c01" class="bulleted-list"><li style="list-style-type:disc"><strong>Enhance Performance</strong>: By focusing on relationships that are statistically proven to be important, the model can more efficiently navigate the knowledge graph to arrive at correct conclusions.</li></ul><ul id="cd00998e-a900-41aa-b5e7-c1e8a077a375" class="bulleted-list"><li style="list-style-type:disc"><strong>Improve Robustness</strong>: The model becomes less sensitive to path lengths and complexity since the weights help in maintaining focus on the most relevant parts of the graph.</li></ul><ul id="062f6687-55f4-4797-b50a-40fcd74bb049" class="bulleted-list"><li style="list-style-type:disc"><strong>Increase Interpretability</strong>: By using understandable modifications (counterfactuals) and observing their impacts, the model&#x27;s reasoning process becomes more transparent and easier to interpret.</li></ul><p id="74973758-93ac-411b-9222-ea9950331caf" class="">This method of using counterfactuals for deriving prior knowledge is a novel approach that leverages both statistical analysis and reinforcement learning, offering a robust mechanism for enhancing knowledge graph reasoning systems.</p><p id="ba343de5-788f-4715-b88b-f6e7e8e54972" class="">
+</p><h3 id="79a70b00-7aca-4497-8d9b-069e333f4e58" class="">after a counterfactual scenario is generated, like by removing a path, does the implementation involve altering the embeddings?</h3><p id="b5c4822f-0191-4174-a5dc-2fe46c12016a" class="">In the approach described in the paper, the use of counterfactual scenarios primarily influences the assignment of weights to relationships rather than directly altering embeddings. Here’s how the process works:</p><h3 id="97855f90-4467-4fdb-a60c-85f6b562b206" class=""><strong>Generation and Use of Counterfactuals:</strong></h3><ol type="1" id="374f8153-a23c-43e8-91e6-21ef2e52531e" class="numbered-list" start="1"><li><strong>Generating Counterfactuals</strong>: Counterfactual scenarios are created by modifying existing paths in the knowledge graph. For example, a relationship in a path might be altered to see how such a change would impact the query&#x27;s outcome.</li></ol><ol type="1" id="9617956b-3ccd-4d91-bdb2-6515eec2f07b" class="numbered-list" start="2"><li><strong>Evaluating Impact</strong>: The main purpose of these counterfactuals is to evaluate the importance of specific relationships in achieving correct reasoning outcomes. If changing a relationship in a path leads to an incorrect or less accurate outcome, this indicates that the original relationship is critical for that particular reasoning path.</li></ol><ol type="1" id="2879c468-e22a-4bc8-ab70-c694111b195b" class="numbered-list" start="3"><li><strong>Assigning Weights</strong>: The insights gained from these counterfactual analyses are used to assign weights to the relationships in the knowledge graph. These weights represent the importance or reliability of each relationship in contributing to correct answers across various queries.</li></ol><h3 id="fb13dc86-961e-4d2b-8904-b373e065ea84" class=""><strong>Integration into the Model:</strong></h3><ul id="46e832ed-42f7-43e6-af9b-3c827d551a72" class="bulleted-list"><li style="list-style-type:disc"><strong>Prior Knowledge Weights</strong>: The weights derived from the counterfactual analysis are treated as prior knowledge within the reinforcement learning model. This prior knowledge helps guide the policy network in deciding which edges (relationships) to select during the reasoning process.</li></ul><ul id="a1e2291c-300f-43ff-810b-fcc236f3b6d6" class="bulleted-list"><li style="list-style-type:disc"><strong>Embeddings and Weights</strong>: <mark class="highlight-orange_background">The model does not alter the embeddings of entities or relationships based on counterfactual scenarios. Instead, embeddings typically remain static as representations of entities and relationships. </mark>The dynamic part, influenced by the counterfactual analysis, is the weighting of these relationships, which affects decision-making but not the underlying embeddings themselves.</li></ul><h3 id="66933c4b-0b2e-436f-bb8f-eafbe65578e5" class=""><strong>Implementation Details:</strong></h3><ul id="1a79a1ab-c582-4e5b-abbc-7ed7e84026af" class="bulleted-list"><li style="list-style-type:disc"><strong>Embedding Stability</strong>: <mark class="highlight-orange_background">In many knowledge graph models, embeddings are pre-trained and fixed during the inference or reasoning tasks to ensure that they consistently represent the semantic properties of entities and relationships. Altering embeddings dynamically in response to each counterfactual scenario would introduce a high level of complexity and instability into the model.</mark></li></ul><ul id="ad543a4e-d4e0-4688-bad9-ea24659ddf80" class="bulleted-list"><li style="list-style-type:disc"><strong>Decision Making Based on Weights</strong>: Instead of altering embeddings, the model uses the weights from counterfactual analysis in its decision-making process. This allows the model to maintain stable representations while adapting its reasoning strategies based on learned importance from counterfactual scenarios.</li></ul><p id="da752986-97c1-417d-9377-ef1aa12be30e" class="">Thus, the innovation in this approach lies in how counterfactuals inform the weighting of relationships, enhancing the reasoning process without altering the fundamental data representations (embeddings) used by the model. This method leverages the strengths of static embeddings for consistent representation while dynamically adjusting reasoning strategies through weighted decisions.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

@@ -1,0 +1,683 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>25: CoCoX: Generating Conceptual and Counterfactual Explanations via Fault-Lines</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="64d5ed8d-4f44-47c3-899c-c01038573b4d" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/></div><h1 class="page-title">25: CoCoX: Generating Conceptual and Counterfactual Explanations via Fault-Lines</h1><p class="page-description"></p></header><div class="page-body"><p id="e89364d4-c140-4776-b660-cdb6d5c6f9ba" class="">Features:</p><p id="bc100207-f060-486f-b8ad-c652eca6f8bb" class="">
+</p><p id="30d4f35d-cf59-4540-8946-82f2f2a14e1b" class="">Questions:</p><p id="e294217d-b97b-4311-9cce-47ce42cc200c" class="">
+</p><hr id="0a4429b4-8502-4ce5-997a-e73427f99a4f"/><p id="52a3724d-9b9f-481c-a075-59941505bb1d" class="">CoCoX uses Grad-CAM to identify important superpixels from the last convolutional layer of a CNN and clusters them into explainable concepts. It then formulates an optimization problem to determine the minimal set of these concepts that need to be added or removed to change the model&#x27;s prediction, providing counterfactual and conceptual explanations.</p><hr id="05c4a325-8ec8-44bf-b4e8-819bdc99f4bc"/><h2 id="b3e03e01-1327-4184-81c9-29ea5fa789da" class="">Genearal Summary</h2><p id="47b67cf3-0ac6-4cf4-9223-5ccdaf48913b" class="">The paper presents CoCoX (Conceptual and Counterfactual Explanations), <mark class="highlight-orange_background">a model designed to explain decisions made by deep convolutional neural networks (CNNs) using fault-lines.</mark> In cognitive psychology<mark class="highlight-orange_background">, fault-lines refer to the semantic-level features humans focus on when imagining an alternative to a model prediction.</mark> CoCoX uses these fault-lines to provide explanations that are both conceptual and counterfactual.</p><h3 id="7e251d10-eeb2-4335-bb93-d5b5e91717c0" class=""><strong>Key Points:</strong></h3><ol type="1" id="2376cea7-9550-464d-a894-28291db991fb" class="numbered-list" start="1"><li><strong>Conceptual and Counterfactual Explanations:</strong><ul id="fd3f7b14-f8a2-46b7-8c45-d192b3815bbf" class="bulleted-list"><li style="list-style-type:disc">CoCoX identifies <mark class="highlight-orange_background">minimal semantic-level features, called explainable concepts</mark> (e.g., stripes on a zebra, pointed ears of a dog), that need to be added to or removed from an input image to change the CNN&#x27;s classification from one category to another.</li></ul><ul id="2026b72e-fa12-4bac-be25-816b4cdef5ee" class="bulleted-list"><li style="list-style-type:disc">This approach provides explanations that are more natural and understandable for both expert and non-expert users.</li></ul></li></ol><ol type="1" id="598916a4-f001-4132-95b9-5a93ebfde272" class="numbered-list" start="2"><li><strong>Fault-Lines:</strong><ul id="7f9bd3ad-e64f-4652-b22f-cdf37c29c5e4" class="bulleted-list"><li style="list-style-type:disc">Positive fault-lines involve adding features to change the classification (e.g., adding stripes to a dog to classify it as a thylacine).</li></ul><ul id="c2219b1e-c94b-4868-9b65-001ff470cf8f" class="bulleted-list"><li style="list-style-type:disc">Negative fault-lines involve removing features (e.g., removing bumps from a toad to classify it as a frog).</li></ul></li></ol><ol type="1" id="ab3c20c4-f92b-4764-9ac2-b77e02b19e8f" class="numbered-list" start="3"><li><strong>Methodology:</strong><ul id="bc90ded8-fc9a-43de-8725-d9c6da7381c6" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-orange_background">The model mines plausible explainable concepts from a dataset using Grad-CAM-based localization maps and K-means clustering.</mark></li></ul><ul id="76ddf3fa-1d44-4342-998d-890f92bd3cfd" class="bulleted-list"><li style="list-style-type:disc">It uses directional derivatives to identify class-specific concepts and formulates the derivation of a fault-line as an optimization problem to find the minimal set of concepts needed to change the classification.</li></ul></li></ol><ol type="1" id="8c918255-49a4-419c-a664-5017c4e494ce" class="numbered-list" start="4"><li><strong>Experiments and Evaluation:</strong><ul id="e8be2d7e-6e8f-4781-a7ce-8c753f3bf70d" class="bulleted-list"><li style="list-style-type:disc">Extensive human subject experiments were conducted to assess the effectiveness of CoCoX compared to state-of-the-art explainable AI models.</li></ul><ul id="4e5e428a-ae55-4d49-814b-f3746eef981b" class="bulleted-list"><li style="list-style-type:disc">Metrics used for evaluation included Justified Trust (JT) and Explanation Satisfaction (ES).</li></ul><ul id="5072c288-c2af-4cef-b8e6-bd16f62246bc" class="bulleted-list"><li style="list-style-type:disc">CoCoX significantly outperformed other models in improving human understanding of the CNN&#x27;s decision-making process.</li></ul></li></ol><ol type="1" id="1cec775c-22ad-48da-846a-735587986934" class="numbered-list" start="5"><li><strong>Implementation and Results:</strong><ul id="0e9e2834-22bc-4f59-b735-19b920c132f2" class="bulleted-list"><li style="list-style-type:disc">The implementation of CoCoX is available at <a href="https://github.com/arjunakula/CoCoX">GitHub</a>.</li></ul><ul id="2b1e5a3a-d0e7-41b6-9d9e-b1e1c18f8723" class="bulleted-list"><li style="list-style-type:disc">The study demonstrated that fault-line explanations improve human understanding and trust in the AI system, making them a practical tool for both experts and non-experts.</li></ul></li></ol><h3 id="c9c79e86-c90e-4d46-a7dd-9c75e8da989e" class=""><strong>Conclusion:</strong></h3><p id="1f32aa68-7a3c-40d4-94a0-0afdf5319c61" class="">CoCoX introduces a novel framework for generating explanations for CNN decisions that are both conceptual and counterfactual, making them more intuitive and effective for users to understand. The approach leverages explainable concepts and fault-lines to provide clear and concise explanations, enhancing human trust and satisfaction with the AI system&#x27;s decisions.</p><hr id="92a82a0f-7c6b-4720-8d3e-6d8ff8f10f40"/><h2 id="45928333-2a40-40f9-a6af-246174c590a7" class="">Technical Aspects</h2><p id="a3899c60-b360-4a5d-bfc0-8c1b48b43f92" class="">The technical aspects of the CoCoX (Conceptual and Counterfactual Explanations) model involve several key components: the identification of explainable concepts, the use of fault-lines, and an optimization approach to derive minimal sets of these concepts for altering CNN predictions. Here&#x27;s a detailed breakdown:</p><h3 id="65eea2e9-dfb1-4204-b33d-5a10877b47f0" class=""><strong>1. Identification of Explainable Concepts</strong></h3><p id="a4bddfbf-eec9-478d-9424-5c66d7d41646" class=""><strong>Semantic Feature Extraction:</strong></p><ul id="a4f22c7e-6a89-4b10-9af3-2d8a55427476" class="bulleted-list"><li style="list-style-type:disc">CoCoX <mark class="highlight-orange_background">uses feature maps</mark> from the last convolutional layer of a pre-trained CNN.</li></ul><ul id="6c8d0db5-b424-4064-80d5-673be1cfec16" class="bulleted-list"><li style="list-style-type:disc">These feature maps capture rich semantic aspects of the input image.</li></ul><p id="661d2ebd-438d-4c44-8f38-b6f2b2c5aaef" class=""><strong>Grad-CAM Localization:</strong></p><ul id="8a2ab58a-abc7-40cd-9372-5e019a062a2c" class="bulleted-list"><li style="list-style-type:disc">Grad-CAM (Gradient-weighted Class Activation Mapping) is used to compute gradients of the output class score with respect to the feature maps.</li></ul><ul id="516846fc-9114-47dc-bc80-c9a08a9811b3" class="bulleted-list"><li style="list-style-type:disc">This helps identify important regions (superpixels) in the image that contribute to the prediction.</li></ul><p id="99973b36-f5a6-44af-8ae8-35ffe01d45fc" class=""><strong>Clustering for Concept Identification:</strong></p><ul id="592dbeb4-698f-4911-9374-bb9a420e3e8a" class="bulleted-list"><li style="list-style-type:disc">The important superpixels are clustered using K-means clustering to form explainable concepts, where each cluster represents a semantic feature (e.g., stripes, pointed ears).</li></ul><ul id="c1505d4b-2eaf-4c61-ab8e-388d62af3957" class="bulleted-list"><li style="list-style-type:disc">Outlier removal is applied to ensure clusters are semantically meaningful.</li></ul><h3 id="3b929cba-31e3-473a-b603-00a4c8b5d167" class=""><strong>2. Fault-Lines</strong></h3><p id="0aba159d-67d6-49a3-b3e4-e8237760eaac" class=""><strong>Positive and Negative Fault-Lines:</strong></p><ul id="fa44a4fa-ae21-4fc1-8cd4-4c8755874739" class="bulleted-list"><li style="list-style-type:disc">Positive fault-lines (PFT) involve adding a new concept to the input image to change its classification (e.g., adding stripes).</li></ul><ul id="371d5c08-c00a-4d59-ab7e-89fd241726f5" class="bulleted-list"><li style="list-style-type:disc">Negative fault-lines (NFT) involve removing a concept (e.g., removing bumps).</li></ul><p id="517c6abd-4ce1-4665-aa5a-4387b564b189" class=""><strong>Class-Specific Concepts:</strong></p><ul id="158501d4-e7d4-4a5f-86e5-4505a3b98fc8" class="bulleted-list"><li style="list-style-type:disc">For each class, the method identifies the most influential concepts using TCAV (Testing with Concept Activation Vectors).</li></ul><ul id="687ec01f-febf-4a19-832a-68e66babfbdf" class="bulleted-list"><li style="list-style-type:disc">Directional derivatives estimate the importance of each concept for a class prediction.</li></ul><h3 id="3536ccfb-a8b8-4717-b6c6-080406fdeeb7" class=""><strong>3. Optimization for Fault-Line Explanation</strong></h3><p id="514e632d-7e09-424a-a730-492146feac14" class=""><strong>Formulation:</strong></p><ul id="44e851c4-5739-457e-bfde-d750a7ffa10c" class="bulleted-list"><li style="list-style-type:disc">The problem of finding fault-lines is formulated as an optimization problem:where:<figure id="29ab2f0a-2c4b-40bf-8c77-1e66e7a7e977" class="image"><a href="25%20CoCoX%20Generating%20Conceptual%20and%20Counterfactual%20%2064d5ed8d4f4447c3899cc01038573b4d/Untitled.png"><img style="width:396.9977722167969px" src="25%20CoCoX%20Generating%20Conceptual%20and%20Counterfactual%20%2064d5ed8d4f4447c3899cc01038573b4d/Untitled.png"/></a></figure><ul id="c70a46ce-19b9-4282-bf47-2ea1ae7cad68" class="bulleted-list"><li style="list-style-type:circle">𝐷(𝛿pred,𝛿alt)<em>D</em>(<em>δ</em>pred,<em>δ</em>alt) is the difference in logit scores after applying changes, controlled by parameter <em>τ</em>.</li></ul><ul id="51a4778d-3bf2-4796-b8ec-1eab0edff98c" class="bulleted-list"><li style="list-style-type:circle">𝛿pred and <em>δ</em>alt are binary vectors indicating the presence or absence of concepts from the predicted and alternative classes.<p id="5dea6cb1-ac7a-458c-8981-39f32adba612" class="">𝛿alt</p></li></ul></li></ul><p id="46f8962c-6b1e-4d9e-981c-c336b6fc98c8" class=""><strong>Perturbation of Feature Maps:</strong></p><ul id="1d074fe4-d156-4262-b15c-6df4abea2264" class="bulleted-list"><li style="list-style-type:disc">Instead of directly modifying the input image, the feature maps at the last convolutional layer are perturbed.</li></ul><ul id="aa81781f-5905-4144-8d9f-f59004d56a0c" class="bulleted-list"><li style="list-style-type:disc">The Hadamard product is used to modify the activations based on the identified concepts.</li></ul><p id="024e3618-d601-45ac-8bf6-0bae848f6ca9" class=""><strong>Algorithm:</strong></p><ul id="33ca6342-761c-402a-b8af-450735695ee7" class="bulleted-list"><li style="list-style-type:disc">The projected fast iterative shrinkage-thresholding algorithm (FISTA) is used to solve the optimization problem.</li></ul><ul id="3334c779-d5a7-48b9-85f8-fdd413b3ce3d" class="bulleted-list"><li style="list-style-type:disc">The goal is to find the <mark class="highlight-orange_background">minimal set of changes to the feature maps that alter the model’s prediction from the predicted class to an alternative class.</mark></li></ul><h3 id="61d4251b-9304-46c0-95dd-c38c16d2cbb9" class=""><strong>4. Experimental Setup</strong></h3><p id="40869b4d-b130-4166-9026-13041a3c2443" class=""><strong>Dataset and Model:</strong></p><ul id="0cd1e194-a594-48df-902a-84be43bb83b6" class="bulleted-list"><li style="list-style-type:disc">The ILSVRC2012 (ImageNet) dataset is used with a VGG-16 CNN model.</li></ul><ul id="84630be7-9d7e-4306-af72-481c52f8e93c" class="bulleted-list"><li style="list-style-type:disc">40 classes are selected, and 46 explainable concepts are identified.</li></ul><p id="4470e851-d876-43b2-b610-c71c86eb72af" class=""><strong>Evaluation Metrics:</strong></p><ul id="1820f696-390b-45ab-a22a-4ceb9982aebc" class="bulleted-list"><li style="list-style-type:disc"><strong>Justified Trust (JT):</strong> Measures the human’s understanding of the model’s decision-making process.</li></ul><ul id="c209aac9-738a-492f-ba7b-d8f995dbbe8b" class="bulleted-list"><li style="list-style-type:disc"><strong>Explanation Satisfaction (ES):</strong> Measures user satisfaction with the explanations in terms of usefulness, sufficiency, detail, understandability, and confidence.</li></ul><p id="c84302a7-a732-4c32-b38d-f0fae3291ac8" class=""><strong>Human Studies:</strong></p><ul id="4dce3598-3812-47ca-9e5a-4247f51ac9a2" class="bulleted-list"><li style="list-style-type:disc">Participants are divided into groups and shown explanations generated by different XAI models, including CoCoX.</li></ul><ul id="9e7aadd0-2ca0-4fb2-91ad-55c5a462f1c0" class="bulleted-list"><li style="list-style-type:disc">Their understanding and trust in the model’s predictions are assessed through familiarization and testing phases.</li></ul><h3 id="1522a63b-421b-48ed-8e82-8404f18cb960" class=""><strong>Conclusion</strong></h3><p id="fc079b99-6816-4785-a7bc-cb399323d137" class="">CoCoX introduces a comprehensive framework that combines semantic feature extraction, concept identification, and optimization to provide conceptual and counterfactual explanations. This approach is shown to significantly enhance human understanding and trust in CNN decisions, making it a powerful tool for explainable AI.</p><hr id="be104d2b-5e28-4aaf-b2a4-5e240d82ef2e"/><h2 id="bccc7991-bd1c-411d-9742-43a535804e0c" class="">Neural Model and Structural Details</h2><p id="3add2666-8933-42a5-aa0a-acd93a9fea0d" class="">
+</p><hr id="6e4db00c-6836-42ee-af2a-76cbe23db773"/><h2 id="000b9a83-72e9-4ec0-af86-6f62b6e0921e" class="">Counterfactual Concept</h2><p id="dd917a65-85bd-4b2a-9cd9-e22774a9545f" class="">
+</p><p id="2a7cb715-8d9e-4086-b02e-c4634e44ea45" class="">
+</p><p id="be279f67-9ac7-4843-ac17-359bada223ac" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

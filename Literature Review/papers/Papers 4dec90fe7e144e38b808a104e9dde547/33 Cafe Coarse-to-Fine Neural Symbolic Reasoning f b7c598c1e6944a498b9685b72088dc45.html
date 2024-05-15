@@ -1,0 +1,685 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>33: Cafe: Coarse-to-Fine Neural Symbolic Reasoning
+for Explainable Recommendation</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="b7c598c1-e694-4a49-8b96-85b72088dc45" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/></div><h1 class="page-title">33: Cafe: Coarse-to-Fine Neural Symbolic Reasoning<br/>for Explainable Recommendation<br/></h1><p class="page-description"></p></header><div class="page-body"><p id="6472f2aa-d0c5-4f95-9af3-9e26e1007f38" class="">Features:</p><p id="ac90949e-ef35-4e20-a291-27de8ca8fb33" class="">
+</p><p id="133920b6-758b-49fd-9c10-b15279cec42f" class="">Questions:</p><p id="d450b3c4-276a-4c55-9434-99f21d8557e6" class="">
+</p><hr id="bb433eb1-9b86-410a-aacd-538f4cb70efd"/><p id="161c79ed-3b32-4912-a34d-99d80d0cf300" class="">
+</p><hr id="cb0ed32d-f54d-4ea5-8dd7-77e52f476247"/><h2 id="ed65428f-9fcf-4c31-a334-d09cafff8d81" class="">Genearal Summary</h2><p id="581ce30b-2985-44ff-a3e1-0386762ab166" class="">The paper &quot;Cafe: Coarse-to-Fine Neural Symbolic Reasoning for Explainable Recommendation&quot; <mark class="highlight-orange_background">focuses on improving e-commerce recommender systems</mark> by incorporating knowledge graphs (KGs) to enhance both recommendation performance and the generation of explanations for the recommendations. Here’s a summary of the key points:</p><ol type="1" id="8560b3e0-cb9a-4738-8be8-c87e276a942d" class="numbered-list" start="1"><li><strong>Knowledge Graphs in Recommender Systems</strong>:<ul id="8ac33b74-74da-47de-9acc-82a81076453f" class="bulleted-list"><li style="list-style-type:disc">Knowledge graphs provide extensive information about users and items, and they can be used for <mark class="highlight-orange_background">explainable recommendations by tracing paths</mark> in the KG from users to items.</li></ul><ul id="7d062aa1-45f3-48a6-8a7c-0746625cc035" class="bulleted-list"><li style="list-style-type:disc">The <mark class="highlight-orange_background">challenge lies in the large search space</mark>, <mark class="highlight-orange_background">unknown destinations</mark>, and sparse signals within the KG, <mark class="highlight-orange_background">necessitating effective guidance for satisfactory recommendations</mark>.</li></ul></li></ol><ol type="1" id="07157dcc-3e45-4b3d-8cf8-66318dc112ca" class="numbered-list" start="2"><li><strong>Coarse-to-Fine Neural Symbolic Reasoning (Cafe)</strong>:<ul id="7cefbf26-90f2-49f8-9514-0d6dab391ade" class="bulleted-list"><li style="list-style-type:disc">The proposed Cafe approach operates in two stages: a coarse stage and a fine stage.</li></ul><ul id="e19508e5-1aa9-4a47-b584-7e6509356bbd" class="bulleted-list"><li style="list-style-type:disc"><strong>Coarse Stage</strong>: <mark class="highlight-orange_background">This stage involves generating user profiles that capture prominent user behaviors based on historical data. These profiles serve as coarse sketches guiding the path-finding process.</mark></li></ul><ul id="17c3d97d-1614-42f8-8543-b15a060459f8" class="bulleted-list"><li style="list-style-type:disc"><strong>Fine Stage</strong>: <mark class="highlight-orange_background">This stage uses the generated user profiles to guide a path-finding algorithm, Profile-guided Path Reasoning (PPR), which leverages neural symbolic reasoning modules to efficiently and effectively find recommendation paths in the KG.</mark></li></ul></li></ol><ol type="1" id="d9237a7d-c9e7-4481-83aa-aa5c20cb100c" class="numbered-list" start="3"><li><strong>User Profiles and Path Reasoning</strong>:<ul id="ca66d03b-d770-4c9a-bf79-071fc91a456e" class="bulleted-list"><li style="list-style-type:disc">User profiles consist of patterns representing user behaviors, extracted from historical activity data.</li></ul><ul id="c248c6c6-34ed-4215-a9dc-eea3e22e654b" class="bulleted-list"><li style="list-style-type:disc">The path-finding algorithm uses these profiles to focus on relevant paths, improving both the efficiency and effectiveness of the recommendations.</li></ul></li></ol><ol type="1" id="a9860c81-6c14-49ff-8dfb-41b714dad074" class="numbered-list" start="4"><li><strong>Experimental Results</strong>:<ul id="93ff4052-df4c-4ec7-b841-7d8dbb0b447f" class="bulleted-list"><li style="list-style-type:disc">The method was tested on four real-world e-commerce datasets and showed substantial improvements in recommendation performance compared to state-of-the-art methods.</li></ul><ul id="7fd5138d-b1f9-4911-830e-4c1a3414fa7f" class="bulleted-list"><li style="list-style-type:disc">The experiments demonstrated the benefits of integrating user profiles into the recommendation process, which resulted in better guidance for path reasoning and higher quality recommendations.</li></ul></li></ol><ol type="1" id="f983b266-3312-41a9-98e7-1c951768ebff" class="numbered-list" start="5"><li><strong>Contributions</strong>:<ul id="85584b94-5118-4518-a0d1-e45b1eb14677" class="bulleted-list"><li style="list-style-type:disc">The paper identifies shortcomings in previous KG reasoning approaches, particularly the isolation of recommendation and path-finding tasks.</li></ul><ul id="a3508c19-d6a5-4d2a-81ba-9143fad95f46" class="bulleted-list"><li style="list-style-type:disc">It introduces a new paradigm by explicitly incorporating diverse user behaviors into the KG reasoning process.</li></ul><ul id="5133ce40-2d54-4bea-a0d0-6756ca384cad" class="bulleted-list"><li style="list-style-type:disc">A novel profile-guided path reasoning algorithm is developed, which utilizes neural symbolic reasoning modules to find recommendation paths efficiently.</li></ul><ul id="81818615-6514-4863-8677-fa6ca3725790" class="bulleted-list"><li style="list-style-type:disc">The approach is empirically validated, showing significant performance gains on multiple benchmarks.</li></ul></li></ol><p id="0b7591ea-e2cf-4c80-abda-11aaa65b9db2" class="">In summary, the Cafe approach enhances e-commerce recommendation systems by integrating user behavior profiles with KG reasoning, enabling more accurate and explainable recommendations through an efficient path-finding process guided by neural symbolic reasoning.</p><hr id="231e08f1-44fa-4bf4-9782-5677ec30211c"/><h2 id="965d26eb-5b3b-4247-9e3b-b6e0eba78ba5" class="">Technical Aspects</h2><p id="b66983e4-ef3d-459b-aad8-c64db6330260" class="">Here is a detailed explanation of the technical aspects of the Cafe approach for explainable recommendations using knowledge graphs:</p><h3 id="e712da06-d349-484a-b4d6-951c14247c1d" class=""><strong>1. Knowledge Graph (KG) Setup</strong></h3><p id="61ad50bd-44cb-4582-97dd-f0a88f114c69" class="">The KG used in the Cafe approach captures rich meta-information about products and user interactions. It consists of:</p><ul id="f0c09d32-4596-451e-95ec-d45dc19ba857" class="bulleted-list"><li style="list-style-type:disc"><strong>Product Graph (Gp)</strong>: Contains entities (products) and relations (e.g., &#x27;belongs_to&#x27;, &#x27;produced_by&#x27;).</li></ul><ul id="80a3b761-2c9e-491a-a973-c8bb1f1c9d65" class="bulleted-list"><li style="list-style-type:disc"><strong>User Interaction Graph (Gu)</strong>: Contains entities (users and products) and diverse user interactions (e.g., &#x27;purchased&#x27;, &#x27;mentioned&#x27;).</li></ul><ul id="f9ac52e3-60ce-44d8-8fc1-da5cf19f155d" class="bulleted-list"><li style="list-style-type:disc"><strong>User-centric KG (G)</strong>: Combines Gp and Gu, facilitating the modeling of both product meta-data and user behaviors.</li></ul><h3 id="6c4fe065-6b19-4df3-b613-58b01e241163" class=""><strong>2. Coarse-to-Fine Paradigm</strong></h3><p id="eac3a837-fbce-41d6-a6fd-857a7a62b5a3" class="">The solution is divided into two stages: coarse and fine.</p><h3 id="43dd4e73-6d5b-4abc-8d29-9dd6e408b1af" class=""><strong>Coarse Stage: User Profile Composition</strong></h3><p id="4749f784-00af-4d1c-92b1-37ceeabc63ca" class="">This stage generates user profiles to guide the fine-grained path reasoning.</p><ul id="ead4e119-e14e-4828-afca-ef4bba4d3312" class="bulleted-list"><li style="list-style-type:disc"><strong>Candidate Patterns (Π)</strong>: A set of user-centric patterns (paths) is generated using a random walk-based algorithm to capture user behaviors up to a certain length (H).</li></ul><ul id="cfef06cc-b3bd-4812-975a-1ddf6daf48a4" class="bulleted-list"><li style="list-style-type:disc"><strong>Personalized Pattern Selection</strong>:<ul id="833bf71a-17d4-465c-b724-577235a39ab8" class="bulleted-list"><li style="list-style-type:circle"><strong>Prominence Score (VΘ)</strong>: The prominence of a pattern π for a user u is defined as the likelihood of generating correct paths using a reasoner ϕ, calculated as:<p id="0c829eae-9759-40ca-9bcf-3125dc704390" class="">𝑉Θ(𝑢,𝜋)=𝐸𝐿∼𝐷𝜋[log⁡𝑃Θ(𝐿∣𝑢)]<em>V</em>Θ(<em>u</em>,<em>π</em>)=<em>EL</em>∼<em>Dπ</em>[log<em>P</em>Θ(<em>L</em>∣<em>u</em>)]</p></li></ul><ul id="c6aa7326-b1f0-4884-b988-c5f9ab360315" class="bulleted-list"><li style="list-style-type:circle"><strong>Knapsack Problem</strong>: The selection of patterns and their weights is formulated as an optimization problem (bounded knapsack) to maximize the overall prominence:<p id="3550f115-02d9-4cff-8e26-eba10bcdd80c" class="">max⁡𝑤1,...,𝑤𝑀∑𝑗𝑤𝑗𝑉Θ(𝑢,𝜋𝑗)<em>w</em>1,...,<em>wM</em>max<em>j</em>∑<em>wj</em><em>V</em>Θ(<em>u</em>,<em>πj</em>)</p></li></ul><ul id="b8976a2b-0014-4a66-9cb5-1a91d780fcae" class="bulleted-list"><li style="list-style-type:circle"><strong>User Profile (Tu)</strong>: Composed of selected patterns and their weights.</li></ul></li></ul><h3 id="07f63291-54ec-4fb8-a435-c952765e1fc8" class=""><strong>Fine Stage: Path Reasoning for Recommendation</strong></h3><p id="ab5a63af-8c38-47f5-bb61-333950e427d3" class="">This stage involves a profile-guided path reasoning algorithm to find paths leading to recommendations.</p><ul id="a59692a0-59d4-428a-8cb4-1488ce3b88de" class="bulleted-list"><li style="list-style-type:disc"><strong>Modularized Reasoning Model</strong>:<ul id="d70f2e89-830d-4eda-bab2-ea59a5b7d71c" class="bulleted-list"><li style="list-style-type:circle"><strong>Neural Symbolic Reasoning Modules (ϕr)</strong>: Each relation r in the KG has a corresponding neural module. These modules predict the next-hop entity based on the user embedding and the history of the path.</li></ul><ul id="a5905117-e9c0-4a3b-99cc-229d95b4d410" class="bulleted-list"><li style="list-style-type:circle"><strong>Module Architecture</strong>: Each module ϕr is a shallow neural network:where [<em>u</em>;<em>h</em>] is the concatenation of user embedding u and history embedding h, and <em>σ</em> is an activation function (e.g., ReLU).<p id="92bcdfb7-ec83-47f5-abc4-87caac9ef3d0" class="">𝜙𝑟(𝑢,ℎ;Θ𝑟)=𝜎(𝜎([𝑢;ℎ]𝑊𝑟,1)𝑊𝑟,2)𝑊𝑟,3<em>ϕr</em>(<em>u</em>,<em>h</em>;Θ<em>r</em>)=<em>σ</em>(<em>σ</em>([<em>u</em>;<em>h</em>]<em>Wr</em>,1)<em>Wr</em>,2)<em>Wr</em>,3</p><p id="c6ef08f3-6464-4fa1-999d-27fda922c7ce" class="">[𝑢;ℎ]</p><p id="b708d56a-3bf3-480a-9e9d-d69ccd9d94fa" class="">𝜎</p></li></ul></li></ul><ul id="444f0553-889d-4e33-a95d-1de74e21736b" class="bulleted-list"><li style="list-style-type:disc"><strong>Profile-guided Path Reasoning (PPR) Algorithm</strong>:<ul id="9ebf76b2-e36e-4ab1-8659-1ac8a0f54354" class="bulleted-list"><li style="list-style-type:circle"><strong>Layout Tree (Tu)</strong>: Constructed based on the user profile. Each node represents a relation and specifies the number of entities to be generated at that position.</li></ul><ul id="1e321813-bd86-457c-adb5-d5e5fcd7edac" class="bulleted-list"><li style="list-style-type:circle"><strong>Path Generation</strong>:<ul id="85c1ad84-e4c1-4001-8ea0-ef5519dd6da4" class="bulleted-list"><li style="list-style-type:square">The root node starts with the user embedding.</li></ul><ul id="2bfd0be0-1e69-4787-b7fd-c0ae36769c6c" class="bulleted-list"><li style="list-style-type:square">For each node, the corresponding neural module generates embeddings for the next-hop entities.</li></ul><ul id="84e98bf7-c75e-4267-a973-21791f2c5313" class="bulleted-list"><li style="list-style-type:square">Entities are selected based on similarity to the generated embeddings, constructing paths level-by-level.</li></ul></li></ul><ul id="e1faccf4-520d-4a73-9012-8021bc43a0a5" class="bulleted-list"><li style="list-style-type:circle"><strong>Batch Path Reasoning</strong>: The algorithm efficiently generates a batch of paths, avoiding redundant computations by reusing embeddings.</li></ul></li></ul><h3 id="2b0a4cf1-01c3-43e6-b16a-60636e0fbf01" class=""><strong>3. Training Objectives</strong></h3><p id="3f2868c5-7c94-4804-8bd3-a491d8c39d6f" class="">The training of the model involves two main loss functions:</p><ul id="8f93a6ae-25ec-467a-b883-a6bbd83de40a" class="bulleted-list"><li style="list-style-type:disc"><strong>Path Probability Loss (ℓpath)</strong>: Encourages the model to fit the given paths:<p id="ba2ce4cc-3ee6-4551-a5cd-9f95d85a406c" class="">ℓ𝑝𝑎𝑡ℎ(Θ;𝐿)=−log⁡𝑃Θ(𝐿∣𝑢)ℓ<em>path</em>(Θ;<em>L</em>)=−log<em>P</em>Θ(<em>L</em>∣<em>u</em>)</p></li></ul><ul id="856e7afa-426a-4dec-85a8-d4ea65a55050" class="bulleted-list"><li style="list-style-type:disc"><strong>Ranking Loss (ℓrank)</strong>: Ensures that the generated paths lead to relevant items:<p id="c79762c4-1325-4e0e-b70e-8041b5172cac" class="">ℓ𝑟𝑎𝑛𝑘(Θ;𝐿)=−𝐸𝑖−∼𝐷−𝑢[𝜎(⟨𝑖+,𝑒ˆ𝑇⟩−⟨𝑖−,𝑒ˆ𝑇⟩)]ℓ<em>rank</em>(Θ;<em>L</em>)=−<em>Ei</em>−∼<em>D</em>−<em>u</em>[<em>σ</em>(⟨<em>i</em>+,<em>e</em>ˆ<em>T</em>⟩−⟨<em>i</em>−,<em>e</em>ˆ<em>T</em>⟩)]</p></li></ul><ul id="0a3bf3e2-b279-4c5f-94c9-c55fc3530b06" class="bulleted-list"><li style="list-style-type:disc"><strong>Overall Objective</strong>: Combines the path probability loss and the ranking loss:<p id="f976dab6-1071-4f75-bb1e-664ecd86ca83" class="">ℓ𝑎𝑙𝑙(Θ)=∑𝑢∑𝐿∼𝐿𝑢ℓ𝑝𝑎𝑡ℎ(Θ;𝐿)+𝜆ℓ𝑟𝑎𝑛𝑘(Θ;𝐿)ℓ<em>all</em>(Θ)=<em>u</em>∑<em>L</em>∼<em>Lu</em>∑ℓ<em>path</em>(Θ;<em>L</em>)+<em>λ</em>ℓ<em>rank</em>(Θ;<em>L</em>)</p></li></ul><h3 id="62f8c8b3-0a84-441c-bc11-5578c80bd6dc" class=""><strong>4. Efficiency and Effectiveness</strong></h3><ul id="b89e91c2-fc7e-4853-97d4-5c672958b08e" class="bulleted-list"><li style="list-style-type:disc"><strong>Efficiency</strong>: The PPR algorithm is designed to find paths in a batch, reducing redundant calculations and improving efficiency.</li></ul><ul id="786134cc-07d7-4ca7-8666-31848e198d41" class="bulleted-list"><li style="list-style-type:disc"><strong>Effectiveness</strong>: User profiles provide valuable guidance, resulting in high-quality recommendations and paths that serve as explanations.</li></ul><h3 id="1c1ad9de-92b2-4cdd-aad9-0f223a6cdab8" class=""><strong>Summary</strong></h3><p id="e044711e-fc54-4c7c-b51d-fb988a69291c" class="">The Cafe approach effectively integrates user behavior patterns into the KG reasoning process, leveraging neural symbolic reasoning for efficient path finding. By composing user profiles and guiding the path reasoning with these profiles, the system provides accurate and explainable recommendations.</p><hr id="da812986-ae94-432d-80fa-9745a8214d1a"/><h2 id="2ec182fd-43a4-49db-b45b-add8b2d2a483" class="">Neural Model and Structural Details</h2><p id="588830da-2e24-4d3f-abc1-a18f454646b9" class="">
+</p><hr id="8c090807-bf4b-4d11-a945-770f7b33520b"/><h2 id="216894d0-01ac-4242-91c9-ffd559f92425" class="">Counterfactual Concept</h2><p id="35fe6475-6619-491c-903c-b7c00db26b2c" class="">
+</p><p id="c345caab-b447-4636-8c7f-999d9b7a727c" class="">
+</p><p id="20b0bbac-4634-4aa1-96c7-b9be85c6ebc9" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

@@ -1,0 +1,678 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>6: Top-N Recommendation with Counterfactual User Preference Simulation</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="6550de7d-2b1e-4861-b94e-01b78d3fd323" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="https://www.notion.so/icons/attachment_lightgray.svg"/></div><h1 class="page-title">6: Top-N Recommendation with Counterfactual User Preference Simulation</h1><p class="page-description"></p></header><div class="page-body"><p id="b566d2a5-ddd4-46b9-b8fc-4a0c393d0b22" class="">features:</p><ul id="ecf35b59-fdbe-46c0-bb72-0ac61ca34d24" class="bulleted-list"><li style="list-style-type:disc">counterfactuals user’s feedback</li></ul><hr id="2e4e03e1-cc31-4c72-81c7-51c3add371f0"/><p id="b087e459-a403-4164-9cd8-7fd136ddd948" class="">The researchers introduced a novel framework for enhancing recommender systems by integrating causal inference, specifically using Structural Equation Models (SEMs) to simulate counterfactual scenarios where different recommendation lists are presented to users. They developed a learning-based intervention method <mark class="highlight-orange_background">to select which hypothetical changes to recommendation lists would yield the most informative user feedback, thereby generating new, diverse training samples that improve recommendation performance</mark> by addressing data sparsity and imbalance.</p><hr id="6f136746-3537-46ca-a2d7-fdb255c28ef2"/><p id="45d83a9b-e783-46ab-b769-06c0bd04d99b" class="">This paper presents a novel approach to address data sparsity and imbalance in recommender systems by applying causal inference principles to simulate user preferences counterfactually. The authors introduce a framework that reformulates the recommendation task within a causal inference framework, using structural equation models (SEMs) to generate new training samples based on simulated user feedback on hypothetical recommendation lists. These generated samples are designed to be informative and aim to optimize the recommendation performance more effectively.</p><p id="8a4f60c8-be28-49b2-892b-480a87763cd6" class="">Key contributions include:</p><ol type="1" id="e3655c7b-2ec0-4566-892c-d8e8a234dd42" class="numbered-list" start="1"><li><strong>Formulation of the recommendation task as a causal inference problem</strong>, allowing for the generation of additional training samples by intervening on the recommendation lists and simulating user responses.</li></ol><ol type="1" id="e44d7c96-6a55-471a-b2b8-77da6fa2cded" class="numbered-list" start="2"><li><strong>A learning-based method for intervention</strong> that selects recommendation lists likely to provide more informative user feedback, thus enriching the training dataset in a meaningful way.</li></ol><ol type="1" id="1354c4b3-26ac-40d8-9fab-991e8fa44896" class="numbered-list" start="3"><li><strong>Theoretical analysis</strong> of the relationship between the number of generated samples and the model prediction error, providing a method to control the potential negative effects of prediction inaccuracies.</li></ol><p id="4e195b45-8699-4284-90da-29d362918d77" class="">The approach is validated through extensive experiments on both synthetic and real-world datasets, demonstrating its ability to enhance the performance of recommender systems, especially in scenarios plagued by sparse data. This work positions itself within the broader discourse on integrating causal reasoning in machine learning, specifically for enhancing recommender systems&#x27; effectiveness by addressing inherent data-related challenges.</p><hr id="6dab67f2-7fb3-472a-aedd-21c83e7dab7e"/><h3 id="d52093de-cc5d-4864-9e2c-0e61d2aa3e70" class=""><strong>1. Structural Equation Models (SEMs)</strong></h3><p id="631f9f90-9247-4cc5-80e2-e5223c772d48" class="">The core of the approach is to formulate the recommendation process using Structural Equation Models (SEMs). SEMs are a type of statistical model used to describe the relationships among multiple variables. In this context:</p><ul id="39c4e5e2-3281-41b8-b790-78608f8a4e2c" class="bulleted-list"><li style="list-style-type:disc"><strong>Variables</strong>: The main variables are the user profiles (U), the recommendation lists (R), and the user selections (S) from those lists.</li></ul><ul id="aef9f8ab-7bf5-4df4-98fd-bb3116cf11ef" class="bulleted-list"><li style="list-style-type:disc"><strong>Equations</strong>: The SEMs describe how these variables influence one another. For example, the recommendation list R might depend probabilistically on the user profile U, and the selections S depend on both R and U.</li></ul><h3 id="3b85f0a4-e6de-4d32-a47d-4a11d7eb397a" class=""><strong>2. Counterfactual Simulation</strong></h3><p id="95407f08-04d2-4b22-a9d7-1fabe680daab" class="">The authors use SEMs to simulate &quot;what-if&quot; scenarios:</p><ul id="b11f8522-ccdf-45cc-9e7b-2cb1152b659e" class="bulleted-list"><li style="list-style-type:disc"><strong>Interventions</strong>: These are hypothetical changes to the input variables (e.g., altering the recommendation list R) that are not observed in the actual data but are plausible within the model&#x27;s framework.</li></ul><ul id="99806ecd-6f60-439b-b8f3-ede580effe23" class="bulleted-list"><li style="list-style-type:disc"><strong>Simulation of User Feedback</strong>: By modifying R, the model predicts how the user&#x27;s selections S would change, effectively generating new data points that reflect possible user reactions to different recommendations.</li></ul><h3 id="586f1ec2-4bcc-4213-a135-5a4344d9ba5c" class=""><strong>3. Learning-Based Intervention</strong></h3><p id="d6cfa268-23f9-47f5-92a6-a1979200da63" class="">Rather than randomly choosing how to intervene on the recommendation lists (R), the paper proposes a learning-based method to identify the most informative interventions:</p><ul id="656d0236-3850-4980-98bf-6d62f52d146c" class="bulleted-list"><li style="list-style-type:disc"><strong>Objective</strong>: The goal is to select interventions that maximize the information gained, helping improve the model by focusing on data that fill in gaps in the existing dataset.</li></ul><ul id="86fbbaa3-61c3-436f-9d13-457e7ca6b298" class="bulleted-list"><li style="list-style-type:disc"><strong>Implementation</strong>: This is done by predicting which hypothetical changes to R would yield the most substantially different user selections S, thus providing new insights into user preferences.</li></ul><h3 id="236de85c-4e13-413b-a427-6c87cce2691c" class=""><strong>4. Theoretical Analysis and Sample Control</strong></h3><p id="1777d60b-07b8-42c1-bd5a-1486496f4b8d" class="">The framework includes a theoretical analysis to understand how the number of counterfactually generated samples affects the accuracy of the model predictions:</p><ul id="fb80068e-abbc-4767-9003-f9f1373b5cb2" class="bulleted-list"><li style="list-style-type:disc"><strong>Prediction Error Analysis</strong>: They explore how inaccuracies in the SEMs (due to imperfect assumptions or incomplete data) can lead to errors in the generated samples.</li></ul><ul id="50c7fd1b-16bb-4019-b54b-9c31ee7c22ac" class="bulleted-list"><li style="list-style-type:disc"><strong>Control Strategy</strong>: To mitigate the impact of these errors, they develop a heuristic approach that adjusts the number of samples used based on their expected contribution to model performance.</li></ul><h3 id="ff417ed9-43ce-4679-a9ec-3cc042db641f" class=""><strong>5. Experiments and Validation</strong></h3><p id="c090ec33-db3f-4b37-8a00-7307087b0046" class="">The methodology is validated with extensive experiments on synthetic and real-world datasets:</p><ul id="2c8623a6-751d-40f8-b4cc-38b056b6bfe3" class="bulleted-list"><li style="list-style-type:disc"><strong>Experimental Design</strong>: Tests involve comparing the performance of the enhanced model (using generated counterfactual data) against standard models that only use observed data.</li></ul><ul id="c15b2275-cb6f-45c6-859a-6649a15d0d55" class="bulleted-list"><li style="list-style-type:disc"><strong>Metrics</strong>: Performance is measured using typical recommender system metrics such as precision, recall, and ranking scores.</li></ul><p id="4938a338-392f-43f6-ab5d-fa64d454a2ef" class="">By integrating these elements, the paper presents a comprehensive approach that leverages causal inference to address fundamental challenges in recommender systems, particularly those related to data sparsity and imbalance. This approach not only enhances prediction accuracy but also provides a framework for more robust and interpretable recommender systems.</p><hr id="5c6d6494-0375-4f44-b6a1-f05ef9876c3c"/><h3 id="7d710920-c432-47de-8cd6-dddeea27ed96" class=""><strong>Conceptual Introduction of Counterfactuals</strong></h3><p id="bf2b259b-a3df-4886-9527-0397e09c8236" class="">The counterfactual concept revolves around the question: &quot;What would be the user&#x27;s decision if the recommended items had been different?&quot; This counterfactual query prompts the need for a method to model and predict outcomes under altered conditions that were not actually observed but are possible given the model.</p><h3 id="305e37d2-ebd4-4029-a53c-7fe2f6e40fdd" class=""><strong>Implementation Steps</strong></h3><p id="d2ff94f0-9acd-4de6-b175-143930280dd4" class="">The implementation of counterfactual reasoning in the recommender system follows these key steps:</p><h3 id="9adc64d4-73f2-4614-b5d0-5901e35af6df" class=""><strong>1. Structural Equation Modeling (SEM)</strong></h3><ul id="b5968cef-71aa-4f7a-a6cf-8c122b37fb29" class="bulleted-list"><li style="list-style-type:disc"><strong>Model Definition</strong>: The recommendation system is modeled using SEMs, which capture the probabilistic dependencies among user profiles (U), recommendation lists (R), and selections (S).</li></ul><ul id="5ef0fa54-4a53-4c20-b4c0-ece664b64845" class="bulleted-list"><li style="list-style-type:disc"><strong>Parameter Learning</strong>: SEM parameters are optimized based on the observed data to accurately reflect the relationships among U, R, and S under the current system&#x27;s operations.</li></ul><h3 id="5e3158ef-c59a-4801-ad40-459742ca03ff" class=""><strong>2. Counterfactual Simulation</strong></h3><ul id="ac30b304-c480-4d52-8a40-1969b7fc72b9" class="bulleted-list"><li style="list-style-type:disc"><strong>Intervention</strong>: This involves conceptually <mark class="highlight-orange_background">altering the recommendation list (R) to different plausible lists that were not originally presented to the u</mark>ser but could have been given the system&#x27;s configuration.</li></ul><ul id="00d935ec-896a-4fee-a223-7b65d63bf8d9" class="bulleted-list"><li style="list-style-type:disc"><strong>Data Generation</strong>: By applying these hypothetical changes to R and using the SEMs, new user selections (S) are simulated based on how the model predicts users would react to these different recommendations.</li></ul><h3 id="67556433-8e18-4487-9e78-4f1d028c31b6" class=""><strong>3. Learning-Based Method for Intervention</strong></h3><ul id="d8f3f8d0-01a7-4ce7-91e9-8f5e1b93650f" class="bulleted-list"><li style="list-style-type:disc"><strong>Selection of Informative Interventions</strong>: Instead of random interventions, a learning-based approach selects interventions on R that are likely to yield the most informative feedback (S). This involves predicting which changes to the recommendation list will maximize differences in user selections, thus generating more diverse and informative training data.</li></ul><ul id="bbe3d5fc-b1ef-4b1c-9101-394450657785" class="bulleted-list"><li style="list-style-type:disc"><strong>Implementation Details</strong>: Techniques such as variational inference are used to learn the SEM parameters and generate possible outcomes under different interventions.</li></ul><h3 id="0c3bd6ef-2bb6-4a5a-9b21-a91262cde756" class=""><strong>4. Theoretical Analysis and Error Control</strong></h3><ul id="dc6abb6c-13f3-403d-b80f-64a5128f2fc5" class="bulleted-list"><li style="list-style-type:disc"><strong>Effect of Intervention</strong>: The paper includes a theoretical analysis to understand how different numbers of counterfactual samples impact the model&#x27;s prediction error.</li></ul><ul id="d4c76209-84d6-4f27-801d-07dab754c549" class="bulleted-list"><li style="list-style-type:disc"><strong>Quality Control</strong>: Strategies are proposed to control the quality of the generated samples, taking into account the potential errors in SEM predictions due to model imperfections or assumptions.</li></ul><h3 id="c8cfbcb7-907f-4b2a-b03c-720feb0773bc" class=""><strong>Experimental Validation</strong></h3><p id="dcbb5b1d-fc0a-4a17-a247-26bb12c6770f" class="">The counterfactual approach is validated through experiments that demonstrate the effectiveness of using generated counterfactual data to enhance recommender system performance. The experiments show that this method can help overcome issues with sparse data by effectively enriching the training dataset with informative samples derived from counterfactual simulations.</p><p id="d6ff9b13-ed68-4e9f-85ab-78eb336efe14" class="">In essence, the counterfactual concept in this solution provides a framework for exploring &quot;what-if&quot; scenarios that broaden the dataset beyond observed interactions, enabling a deeper and more robust understanding of user preferences and decision-making processes. This method not only improves the accuracy and performance of the recommendation system but also enhances its ability to handle new or rare scenarios by simulating responses to unobserved conditions.</p><hr id="24c22826-a023-4086-997e-5ae9e58cff5a"/><p id="b274f773-4787-4a1e-8390-6872ad5fbb62" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
