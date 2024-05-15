@@ -18,3 +18,14 @@ The expected outcomes of this analysis include identifying attributes and intera
 
 ## Conclusion
 This structured approach allows for a comprehensive evaluation of the counterfactual scenarios, demonstrating the potential impacts of varying product attributes on recommendation outcomes.
+
+
+## To Do
+- [ ] Code Refactor
+- [ ] Report Completion
+
+## Already Done
+- [x] Literature Review Summary
+- [x] Proposal
+- [x] Methodology Chapter Draft
+- [x] Code Completed
