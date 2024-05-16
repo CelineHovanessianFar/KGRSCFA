@@ -10,6 +10,8 @@ To enhance the counterfactual process, I performed community identification and 
 
 The analysis is based on the assumption that the system understands the user's preferences based on their purchased products. To test if a product with different attributes would still be recommended, I conducted an isolated analysis of each attribute. This involved taking the corresponding metapath for that attribute within the system and calculating the recommendation score. If the score of the path connecting the user to the product (through any of the user's purchased products) was higher than the score of the 10th recommended product, it suggested that the product would still be recommended with the different attribute.
 
+This project is built upon the "CAFE: Coarse-to-Fine Neural Symbolic Reasoning for Explainable Recommendation"* recommender system.
+
 ## Examples
 An example would be testing counterfactual interactions such as viewing a certain other product leading to viewing the recommended product, or if a product is cruelty-free, to see if that scenario is still plausible. This provides extended explainability for the provider side.
 
@@ -30,3 +32,9 @@ This structured approach allows for a comprehensive evaluation of the counterfac
 - [x] Literature Chapter Draft
 - [x] Methodology Chapter Draft
 - [x] Code Completed
+
+
+---
+
+CAFE: Coarse-to-Fine Neural Symbolic Reasoning for Explainable Recommendation
+Xian, Y., Fu, Z., Zhao, H., Ge, Y., Chen, X., Huang, Q., Geng, S., Qin, Z., De Melo, G., Muthukrishnan, S., & Zhang, Y. (2020). CAFE: Coarse-to-Fine Neural Symbolic Reasoning for Explainable Recommendation. Proceedings of the 29th ACM International Conference on Information & Knowledge Management, 1645–1654. https://doi.org/10.1145/3340531.3412038
