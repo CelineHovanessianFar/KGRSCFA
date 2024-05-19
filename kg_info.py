@@ -5,7 +5,7 @@ import numpy as np
 from scipy import stats as stat_module
 from pprint import pprint
 from CAFE import utils
-
+import pickle
 
 class KGENtitiesRelationsInfo:
     def __init__(self):
@@ -16,6 +16,8 @@ class KGENtitiesRelationsInfo:
         self.rel2mp = self._relation2mp_generate()
         self.ent2related_ent = self.kg.entity_related_type_info
         self.ent2rel = self._entity_relations_info()
+        self.old2new_ids = self._get_old_to_new_ids()
+        self.new2old_ids = self._get_new_to_old_ids()
 
     def _mp2ents_generate(self):
         mp2ents = dict()
@@ -117,3 +119,13 @@ class KGENtitiesRelationsInfo:
 
         connection_stats_df = pd.DataFrame(records)
         return connection_stats, connection_stats_df
+    
+    def _get_new_to_old_ids(self):
+        with open('CAFE/tmp/new_to_old.pickle', 'rb') as file:
+            new_to_old = pickle.load(file)
+        return new_to_old
+
+    def _get_old_to_new_ids(self):
+        with open('CAFE/tmp/old_to_new.pickle', 'rb') as file:
+            old_to_new = pickle.load(file)
+        return old_to_new

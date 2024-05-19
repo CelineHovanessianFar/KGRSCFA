@@ -23,8 +23,7 @@ This structured approach allows for a comprehensive evaluation of the counterfac
 
 
 ## To Do
-- [ ] Code Refactor
-- [ ] Report Completion
+- [ ] Presentation
 
 ## Already Done
 - [x] Proposal
@@ -32,6 +31,8 @@ This structured approach allows for a comprehensive evaluation of the counterfac
 - [x] Literature Chapter Draft
 - [x] Methodology Chapter Draft
 - [x] Code Completed
+- [x] Code Refactor
+- [x] Report First Draft Completion
 
 
 ---

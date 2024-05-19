@@ -1,5 +1,10 @@
 import logging
 import utils
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import kg_info
+import pickle
 
 class ShrinkPosprocess:
     def __init__(self, kg_obj) -> None:
@@ -71,6 +76,10 @@ class ShrinkPosprocess:
         logging.info("Starting the update of the ids and embeddings...")
         self.remap_entity_ids()
         self.update_embeddings()
+        with open('CAfE/tmp/new_to_old.pickle', 'wb') as file:
+            pickle.dump(self.new_id_maps, file)
+        with open('CAFE/tmp/old_to_new.pickle', 'wb') as file:
+            pickle.dump(self.old_id_maps, file)
         logging.info("The update of the ids and embeddings is finished")
 
         

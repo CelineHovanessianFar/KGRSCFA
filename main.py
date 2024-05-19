@@ -31,9 +31,12 @@ def main(args):
     pprint(user_recommendations)
     
     print("Running counterfactual analysis...")
+    print('#' * 100)
     path_to_analyize = user_recommendations[0]
+    print(user_recommendations[0])
+    print('#' * 100)
     cf_framework = CounterfactualFramework(args, user_recommendations, path_to_analyize)
-    cf_framework.counterfactual_explanation()
+    cf_framework.counterfactual_explanation_textual()
 
 
 if __name__ == '__main__':
