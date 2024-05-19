@@ -135,7 +135,7 @@ class ClusterCounterfactuals:
             self.evaluate_metapaths(purchased_product, entity, counter_metapaths, related_ent_ids, model, counter_scores)
 
     def evaluate_metapaths(self, purchased_product, entity, counter_metapaths, related_ent_ids, model, counter_scores):
-        for mp_id, counter_mp in enumerate(tqdm(counter_metapaths, desc=f"Processing Metapaths for Entity: {entity}", leave=False)):
+        for mp_id, counter_mp in enumerate(counter_metapaths):
             mp_temp_dict = {'mp': counter_mp}
             self.score_metapaths(purchased_product, related_ent_ids, counter_mp, model, mp_temp_dict)
             if entity not in counter_scores:
@@ -145,7 +145,7 @@ class ClusterCounterfactuals:
             counter_scores[entity][mp_id].append(mp_temp_dict)
 
     def score_metapaths(self, purchased_product, related_ent_ids, counter_mp, model, mp_temp_dict):
-        for rel_ent_id in tqdm(related_ent_ids, desc="Processing IDs in entity"):
+        for rel_ent_id in related_ent_ids:
             path_ent_ids = [
                 self.recommendation_path[0][0],  # user_id
                 purchased_product,

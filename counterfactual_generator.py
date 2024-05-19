@@ -7,7 +7,6 @@ from pprint import pprint
 from statistics import mean, stdev
 import os
 
-from tqdm import tqdm
 from scipy import stats
 import networkx as nx
 from community import community_louvain
@@ -62,7 +61,7 @@ class EntityFilter:
 
         # Process categories
         category_ids = self.kg.G['product'].get(product_id, {}).get('belongs_to', [])
-        for category_id in tqdm(category_ids, desc='Processing Categories: '):
+        for category_id in category_ids:
             related_products = self.kg.G['category'].get(category_id, {}).get('rev_belongs_to', [])
             related_products = self.community_filter(product_id, related_products, category_id, 'category', 'product', force_community_filter=force_community_filter)
 
@@ -94,7 +93,7 @@ class EntityFilter:
 
         # Process words
         word_ids = self.kg.G['product'].get(product_id, {}).get('described_by', [])
-        for word_id in tqdm(word_ids, desc='Processing Words'):
+        for word_id in word_ids:
             related_products = self.kg.G['word'].get(word_id, {}).get('rev_described_by', [])
             related_products = self.community_filter(product_id, related_products, word_id, 'word', 'product', force_community_filter=force_community_filter)
 
@@ -116,7 +115,7 @@ class EntityFilter:
 
         related_products = self.community_filter(product_id, related_products, product_id, 'related_product', 'product', force_community_filter=force_community_filter)
 
-        for related_product_id in tqdm(related_products, desc="Connected Products: "):
+        for related_product_id in related_products:
             related_product_info = self.kg.G['product'].get(related_product_id, {})
             entities['category'].update(self.filter_entities('category', related_product_info.get('belongs_to', []), product_id, related_product_id, force_community_filter=force_community_filter))
             entities['brand'].update(self.filter_entities('brand', related_product_info.get('produced_by', []), product_id, related_product_id, force_community_filter=force_community_filter))

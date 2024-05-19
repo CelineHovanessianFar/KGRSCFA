@@ -5,7 +5,6 @@ import sys
 import argparse
 import numpy as np
 import pickle
-from tqdm import tqdm
 import logging
 import logging.handlers
 import torch

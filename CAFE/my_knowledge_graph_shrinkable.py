@@ -7,7 +7,6 @@ import KG_shrinkage_utils
 from utils import DATA_DIR
 import utils
 import logging
-from tqdm import tqdm
 from shrink_postprocess import ShrinkPosprocess
 
 # ENTITY TYPES
@@ -187,7 +186,7 @@ class MyKnowledgeGraphShrinkable:
         def identify_invalid_ents(self):
             logging.info("Identifying and removing invalid entities...")
             removed_entities = {entity: [] for entity in self.G}
-            for entity in tqdm(self.G, desc="Processing Entities"):
+            for entity in self.G:
                 related_entities = self.kg_obj.entity_related_type_info[entity]
                 for related_ent in related_entities:
                     valid_rel_ent_ids = self.G[related_ent].keys()
@@ -203,7 +202,7 @@ class MyKnowledgeGraphShrinkable:
         def prune_graph(self):
             logging.info("Starting graph pruning...")
             valid_ids = {entity: set() for entity in self.G}
-            for entity in tqdm(['user', 'product'], desc="Pruning Users and Products"):
+            for entity in ['user', 'product']:
                 related_entities = self.kg_obj.entity_related_type_info[entity]
                 for related in related_entities:
                     relations = self.kg_obj.reversed_relation_info[(entity, related)]
@@ -212,13 +211,9 @@ class MyKnowledgeGraphShrinkable:
                             if relation in self.G[entity][eid]:
                                 valid_ids[related].update(self.G[entity][eid][relation])
 
-            for entity in tqdm(['word', 'brand', 'category', 'related_product'], desc="Final Pruning"):
-                print(f"processing: {entity}")
+            for entity in ['word', 'brand', 'category', 'related_product']:
                 self.G[entity] = {eid:self.G[entity][eid] for eid in self.G[entity] if eid in valid_ids[entity]}
 
-            removed_entities = self.identify_invalid_ents()
-            print(removed_entities)
-            logging.info("Graph pruning completed.")
             return self.G
 # ==========================================================-================================        
     def remap_entity_ids(self, entity_related_type_info):

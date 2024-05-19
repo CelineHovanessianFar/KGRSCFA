@@ -45,7 +45,7 @@ class CentralityScores:
             entity_edges = []
             
             # Iterate over each word and its connections
-            for entity_id, edges in tqdm(self.kg.get(entity, {}).items(), desc=f'Processing {entity} Nodes: '):
+            for entity_id, edges in self.kg.get(entity, {}).items():
                 relation = self.relation_info(entity, 'product')
                 targets = edges.get(relation, [])
                 for target in targets:
@@ -57,7 +57,7 @@ class CentralityScores:
             
             # Check for connections between products and other words
             product_edges = []
-            for product_id, product_edges_dict in tqdm(self.kg.get('product', {}).items(), desc="Processing product Nodes: "):
+            for product_id, product_edges_dict in self.kg.get('product', {}).items():
                 relation = self.relation_info('product', entity)
                 product_targets = product_edges_dict.get(relation, [])
                 for target in product_targets:

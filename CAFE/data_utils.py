@@ -8,7 +8,6 @@ import random
 import time
 import numpy as np
 from math import log
-from tqdm import tqdm
 import gzip
 import torch
 from torch.utils.data import RandomSampler, DataLoader
