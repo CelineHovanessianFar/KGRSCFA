@@ -11,7 +11,6 @@ def load_kg_embedding(dataset: str):
     """Note that entity embedding is of size [vocab_size+1, d]."""
     print('>>> Load KG embeddings ...')
     state_dict = utils.load_embed_sd(dataset)
-    # print(state_dict.keys())
     embeds = dict()
     # Load entity embeddings
     for entity in [USER, PRODUCT, WORD, BRAND, CATEGORY, RPRODUCT]:
@@ -30,17 +29,6 @@ def load_kg_embedding(dataset: str):
             )
     return embeds
 
-
-# def compute_top100_items(dataset):
-#     embeds = utils.load_embed(dataset)
-#     user_embed = embeds[USER]
-#     product_embed = embeds[PRODUCT]
-#     purchase_embed, purchase_bias = embeds[PURCHASE]
-#     scores = np.dot(user_embed + purchase_embed, product_embed.T)
-#     user_products = np.argsort(scores, axis=1)  # From worst to best
-#     best100 = user_products[:, -100:][:, ::-1]
-#     print(best100.shape)
-#     return best100
 
 
 def compute_top100_items(dataset, kg=None):
@@ -73,7 +61,7 @@ def estimate_path_count(args):
     utils.save_path_count(args.dataset, counts)
 
 
-def main(args):
+def preprocess(args):
     # Run following code to extract embeddings from state dict.
     # ========== BEGIN ========== #
     embeds = load_kg_embedding(args.dataset)
@@ -82,7 +70,7 @@ def main(args):
 
     # Run following codes to generate MyKnowledgeGraph object.
     # ========== BEGIN ========== #
-    kg = MyKnowledgeGraphShrinkable(args.dataset,120)
+    kg = MyKnowledgeGraphShrinkable(args.dataset,args.user_sample_size)
     utils.save_kg(args.dataset, kg)
     # =========== END =========== #
 
@@ -98,6 +86,12 @@ def main(args):
     # =========== END =========== #
 
 
-if __name__ == '__main__':
+def main(main_args = None):
     args = utils.parse_args()
-    main(args)
+    if main_args:
+        args.user_sample_size = main_args.user_sample_size
+    preprocess(args)
+
+if __name__ == '__main__':
+    main()
+

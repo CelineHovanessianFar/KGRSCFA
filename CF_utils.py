@@ -35,6 +35,7 @@ def parse_args():
     parser.add_argument('--use_dropout', type=str_to_bool, default=True, help='Use dropout or not.')
     parser.add_argument('--steps_per_checkpoint', type=int, default=100, help='Number of steps per checkpoint.')
     parser.add_argument('--sample_size', type=int, default=15, help='Sample size for model.')
+    parser.add_argument('--user_sample_size', type=int, default=100, help='Sample size of users for KG shrinkage.')
     parser.add_argument('--do_infer', type=str_to_bool, default=False, help='Whether to infer paths after training.')
     parser.add_argument('--do_execute', type=str_to_bool, default=False, help='Whether to execute neural programs.')
     parser.add_argument('--preprocess_dir', type=str, default=f'{CAFE_DIR}/preprocess.py', help="Path to preprocess.py.") 

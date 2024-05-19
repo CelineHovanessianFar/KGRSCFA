@@ -4,7 +4,7 @@ import CF_utils
 from recommender import get_recommendation
 from pprint import pprint
 from counterfactual_analysis import CounterfactualFramework
-
+from CAFE import preprocess
 def is_model_trained(model_path):
     return os.path.exists(model_path)
 
@@ -16,7 +16,7 @@ def main(args):
     
     if not preprocess_completed():
         print("Running preprocess.py...")
-        subprocess.run(["python", args.preprocess_dir], check=True)
+        preprocess.main(args)
     print('Preprocess Step Already Completed!')
         
     if not is_model_trained(args.symbolic_model):
