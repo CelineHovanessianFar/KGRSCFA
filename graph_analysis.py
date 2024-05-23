@@ -1,5 +1,6 @@
 import networkx as nx
 from community import community_louvain
+import collections
 
 def calculate_and_identify_top_centralities(G):
     # Calculate centralities
@@ -144,10 +145,31 @@ class CommunityAnalyzer:
         return G
 
     def identify_communities(self):
-        self.partition = community_louvain.best_partition(self.G)
+        self.partition = community_louvain.best_partition(self.G, random_state=42)
         # Create a new partition dictionary with node types included
         partition_with_types = {}
         for node, community in self.partition.items():
             node_type = self.G.nodes[node].get('type', 'unknown')
             partition_with_types[(node, node_type)] = community
         return partition_with_types
+
+
+    def report_community_composition(self):
+        # This method assumes that 'identify_communities' has been called first
+        if self.partition is None:
+            raise ValueError("Communities not identified. Please run identify_communities() first.")
+
+        # Initialize a dictionary to store the counts
+        community_composition = collections.defaultdict(lambda: collections.Counter())
+        
+        # Iterate over each node and its community
+        for node, community in self.partition.items():
+            node_type = self.G.nodes[node]['type']  # Get the type of the node
+            community_composition[community][node_type] += 1  # Increment the count of the type in its community
+
+        # Create a readable report from the composition data
+        report = {}
+        for community, types in community_composition.items():
+            report[f"Community {community}"] = dict(types)
+
+        return report
