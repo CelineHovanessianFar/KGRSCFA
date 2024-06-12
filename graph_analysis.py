@@ -1,6 +1,11 @@
 import networkx as nx
 from community import community_louvain
 import collections
+from CAFE import utils
+import numpy as np
+import os
+import pickle
+from kneed import KneeLocator
 
 def calculate_and_identify_top_centralities(G):
     # Calculate centralities
@@ -28,8 +33,9 @@ def calculate_and_identify_top_centralities(G):
     }
 
 class CentralityScores:
-    def __init__(self) -> None:
+    def __init__(self, G) -> None:
         self.kg_obj = utils.load_kg('beauty')
+        self.G = G
         self.kg = self.kg_obj.G
         self.relation_info = self.kg_obj.relation_info
         self.category_product_subgraph = None
@@ -89,11 +95,48 @@ class CentralityScores:
 
         self.centrality_scores = centrality_scores
 
+    def adjusted_degree_centrality(self, number_of_products=859):
+        file_path = 'tmp/multimodal_degree_centralities.pkl'
+        
+        # Check if the file exists
+        if os.path.exists(file_path):
+            # Load the centrality data from the file
+            with open(file_path, 'rb') as f:
+                centrality = pickle.load(f)
+        else:
+            # Calculate raw degree centrality for all nodes
+            raw_centrality = self.G.degree()
+
+            # Count the total number of nodes except 'product' type nodes
+            non_product_nodes = sum(1 for n in self.G.nodes if not n.startswith('product'))
+            
+            # Initialize the centrality dictionary
+            centrality = {}
+
+            # Apply different normalization based on node type
+            for node, degree in raw_centrality:
+                if node.startswith('product'):
+                    # Normalize by the number of non-product nodes
+                    centrality[node] = degree / non_product_nodes
+                else:
+                    # Normalize by the number of products
+                    centrality[node] = degree / number_of_products
+
+            # Save the centrality data to the file
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            with open(file_path, 'wb') as f:
+                pickle.dump(centrality, f)
+
+        return centrality
+
 
 class CommunityAnalyzer:
-    def __init__(self, kg):
-        self.kg = kg
-        self.G = self.build_graph(kg)
+    def __init__(self):
+        self.kg_obj = utils.load_kg('beauty')
+        self.kg = self.kg_obj.G
+        self.G = self.build_graph(self.kg)
+        CS = CentralityScores(self.G)
+        self.centrality_dict = CS.adjusted_degree_centrality()
         self.degree_centrality = None
         self.betweenness_centrality = None
         self.closeness_centrality = None
@@ -144,11 +187,62 @@ class CommunityAnalyzer:
                 
         return G
 
-    def identify_communities(self):
-        self.partition = community_louvain.best_partition(self.G, random_state=42)
-        # Create a new partition dictionary with node types included
+
+    def identify_communities(self, method='top_n', top_n=10, num_std_dev=2, top_percentile=95):
+        def remove_centrality_outliers(method='std_dev', num_std_dev=2, top_n=10, top_percentile=95):
+            centrality_values = list(self.centrality_dict.values())
+            removed_nodes = {}
+
+            if method == 'std_dev':
+                mean_centrality = np.mean(centrality_values)
+                std_dev_centrality = np.std(centrality_values)
+                lower_bound = mean_centrality - num_std_dev * std_dev_centrality
+                upper_bound = mean_centrality + num_std_dev * std_dev_centrality
+                for node, centrality in self.centrality_dict.items():
+                    if centrality < lower_bound or centrality > upper_bound:
+                        removed_nodes[node] = centrality
+            elif method == 'top_n':
+                sorted_centralities = sorted(self.centrality_dict.items(), key=lambda item: item[1], reverse=True)
+                # Collect top_n outliers
+                for node, centrality in sorted_centralities[:top_n]:
+                    removed_nodes[node] = centrality
+            elif method == 'iqr':
+                Q1 = np.percentile(centrality_values, 25)
+                Q3 = np.percentile(centrality_values, 75)
+                IQR = Q3 - Q1
+                lower_bound = Q1 - 1.5 * IQR
+                upper_bound = Q3 + 1.5 * IQR
+                for node, centrality in self.centrality_dict.items():
+                    if centrality < lower_bound or centrality > upper_bound:
+                        removed_nodes[node] = centrality
+            elif method == 'percentile':
+                threshold = np.percentile(centrality_values, top_percentile)
+                # Collect percentile-based outliers
+                for node, centrality in self.centrality_dict.items():
+                    if centrality >= threshold:
+                        removed_nodes[node] = centrality
+            
+            elif method == None:
+                return self.G
+            else:
+                raise ValueError("Invalid method specified. Choose 'std_dev', 'top_n', 'iqr', or 'percentile'.")
+
+            # Create a new graph without outliers
+            G_new = self.G.copy()
+            nodes_to_remove = set(removed_nodes.keys())
+            # TODO: does this remove the edges too? is this consistent?
+            G_new.remove_nodes_from(nodes_to_remove)
+
+            return G_new
+
+    # Remove outliers based on centrality and get the cleaned graph and removed nodes
+        G_clean = remove_centrality_outliers(method=method, top_n=top_n, num_std_dev=num_std_dev, top_percentile=top_percentile)
+
+
+        # Community detection using Louvain method
+        partition = community_louvain.best_partition(G_clean, random_state=42)
         partition_with_types = {}
-        for node, community in self.partition.items():
+        for node, community in partition.items():
             node_type = self.G.nodes[node].get('type', 'unknown')
             partition_with_types[(node, node_type)] = community
         return partition_with_types
@@ -173,3 +267,76 @@ class CommunityAnalyzer:
             report[f"Community {community}"] = dict(types)
 
         return report
+
+
+class CentralityOutlierChecker:
+    def __init__(self, method='std_dev', thresholds=None):
+        self.method = method
+        self.thresholds = thresholds if thresholds is not None else {
+            'std_dev': 2,
+            'top_n': 20,
+            'percentile': 95,
+            'iqr': 1.5  # Adding default for IQR as well
+        }
+        self.centrality_bounds = {}
+        self.centrality_dict = self.load_centrality_dict()
+        self.compute_all_centrality_bounds()
+
+    def load_centrality_dict(self):
+        file_path = 'tmp/multimodal_degree_centralities.pkl'
+        
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as f:
+                return pickle.load(f)
+        else:
+            raise FileNotFoundError("Centrality dict not found")
+
+    def compute_all_centrality_bounds(self):
+        centrality_values = list(self.centrality_dict.values())
+        sorted_centralities = sorted(centrality_values, reverse=True)
+
+        mean = np.mean(centrality_values)
+        std = np.std(centrality_values)
+        self.centrality_bounds['std_dev'] = (
+            mean - self.thresholds['std_dev'] * std, 
+            mean + self.thresholds['std_dev'] * std
+        )
+
+        self.centrality_bounds['top_n'] = (
+            None, 
+            sorted_centralities[min(self.thresholds['top_n'] - 1, len(sorted_centralities) - 1)]
+        )
+
+        Q1, Q3 = np.percentile(centrality_values, [25, 75])
+        IQR = Q3 - Q1
+        self.centrality_bounds['iqr'] = (
+            Q1 - self.thresholds['iqr'] * IQR, 
+            Q3 + self.thresholds['iqr'] * IQR
+        )
+
+        self.centrality_bounds['percentile'] = (
+            None, 
+            np.percentile(centrality_values, self.thresholds['percentile'])
+        )
+
+        x = np.arange(0, len(centrality_values))
+        knee_locator = KneeLocator(x, sorted_centralities, curve='convex', direction='decreasing')
+        knee_value = sorted_centralities[knee_locator.knee] if knee_locator.knee is not None else None
+        self.centrality_bounds['knee'] = (None, knee_value)
+
+    def is_outlier(self, centrality, method=None):
+        if method is None:
+            method = self.method
+        
+        if method not in self.centrality_bounds:
+            raise ValueError(f"Method {method} not supported or bounds not set.")
+
+        lower_bound, upper_bound = self.centrality_bounds[method]
+        if method in ['std_dev', 'iqr']:
+            return centrality < lower_bound or centrality > upper_bound
+        elif method in ['top_n', 'knee']:
+            return centrality > upper_bound if upper_bound is not None else False
+        elif method == 'percentile':
+            return centrality >= upper_bound
+
+        return False

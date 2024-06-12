@@ -21,11 +21,18 @@ from graph_analysis import *
 import sys
 sys.path.append('CAFE')
 
+
+class Outliers:
+    def __init__(self) -> None:
+        pass
+
+
 class EntityFilter:
     def __init__(self):
         self.kg = utils.load_kg('beauty')
-        self.analyzer = CommunityAnalyzer(self.kg.G)
+        self.analyzer = CommunityAnalyzer()
         self.kg_info = KGENtitiesRelationsInfo()
+        self.outlier_detector = Outliers()
         self.connection_stats, _ = self.kg_info.calculate_connection_stats()
         self.Node2Partition = self.analyzer.identify_communities()
         self.partition2Node = {}
@@ -34,96 +41,94 @@ class EntityFilter:
                 self.partition2Node[value] = []
             self.partition2Node[value].append(key)
 
-    def community_filter(self, recommended_product_id, related_entities, h_entity_id, h_entity_type, t_entity_type, zscore_threshold=0.02, force_community_filter=False):
-        # Get z-score of the entity
-        entity_zscore = self.connection_stats[(h_entity_type, t_entity_type)]['z_scores'][h_entity_id]
+    def set_community_flag(self, h_entity_type, t_entity_type, h_entity_id, zscore_threshold=0.2, zscore=True):
+        if zscore:
+            z_score = self.connection_stats[(h_entity_type, t_entity_type)]['z_scores'].get(h_entity_id, float('inf'))
+            if z_score > zscore_threshold:
+                return True
+        centrality = self.outlier_checker.centrality_dict[f'{h_entity_type}_{h_entity_id}']
+        return self.outlier_checker.is_outlier(centrality)
 
-        if entity_zscore <= zscore_threshold and not force_community_filter:
-            return set(related_entities)
-        else:
-            # Perform community filtering
-            recommended_product_community = self.Node2Partition[('product_{}'.format(recommended_product_id), 'product')]
-            partition_nodes = self.partition2Node[recommended_product_community]
-            partition_entities = {int(node[0].split('_')[-1]) for node in partition_nodes if node[1] == t_entity_type}
-            related_entities_in_partition = {rel_ent for rel_ent in related_entities if rel_ent in partition_entities}
+    def filter_entities(self, product_id, related_entities, h_entity_type, t_entity_type, h_entity_id, zscore_threshold=0.2, force_community_filter=False, drop_outlier_head=False):
+        community_flag = self.set_community_flag(h_entity_type, t_entity_type, h_entity_id, zscore_threshold, True)
 
-            return related_entities_in_partition
+        if community_flag or force_community_filter:
+            recommended_product_community = self.Node2Partition.get(('product_{}'.format(product_id), 'product'), None)
+            if recommended_product_community is None:
+                return set()  # Return an empty set if the product community is not found
+            
+            partition_et_ids = []
+            for node, type in self.partition2Node.get(recommended_product_community, []):
+                if type == t_entity_type:
+                    entity_id = int(node.split('_')[-1])
+                    partition_et_ids.append(entity_id)
 
-    def filter_entities(self, entity_type, related_entities, product_id, related_product_id, force_community_filter=False):
-        entity_zscore = self.connection_stats[('product', entity_type)]['z_scores'][related_product_id]
-        if entity_zscore > 1 or force_community_filter:
-            related_entities = self.community_filter(product_id, related_entities, related_product_id, 'product', entity_type, force_community_filter=force_community_filter)
-        # TODO: you can add filtering the finals based on betweenness centrality
-        return related_entities
+            # partition_nodes = self.partition2Node.get(recommended_product_community, [])
+            # partition_entities = {int(node[0].split('_')[-1]) for node in partition_nodes if node[0].startswith(t_entity_type)}
+            centrality = lambda entity: self.outlier_checker.centrality_dict[f'{t_entity_type}_{entity}']
+            return {entity for entity in related_entities if entity in partition_et_ids and not self.outlier_checker.is_outlier(centrality(entity), method="knee")}
+        
+        centrality = lambda entity: self.outlier_checker.centrality_dict[f'{t_entity_type}_{entity}']
+        return {entity for entity in related_entities if not self.outlier_checker.is_outlier(entity, method="knee")}
+    
 
-    def __call__(self, product_id, force_community_filter=False, print_report=False):
+
+    def update_entities(self, kg, related_products, recommended_product_id, entities, force_community_filter):
+        for related_product_id in related_products:
+            related_product_info = kg['product'].get(related_product_id, {})
+            category_entities = related_product_info.get('belongs_to', [])
+            filtered_categories = self.filter_entities(recommended_product_id, category_entities, 'product', 'category', related_product_id, force_community_filter=force_community_filter)
+            entities['category'].update(filtered_categories)
+
+            brand_entities = related_product_info.get('produced_by', [])
+            filtered_brands = self.filter_entities(recommended_product_id, brand_entities, 'product', 'brand', related_product_id, force_community_filter=force_community_filter)
+            entities['brand'].update(filtered_brands)
+
+            word_entities = related_product_info.get('described_by', [])
+            filtered_words = self.filter_entities(recommended_product_id, word_entities, 'product', 'word', related_product_id, force_community_filter=force_community_filter)
+            entities['word'].update(filtered_words)
+
+            related_related_products = related_product_info.get('also_bought', []) +\
+                                        related_product_info.get('also_viewed', []) +\
+                                        related_product_info.get('bought_together', [])
+            filtered_related_products = self.filter_entities(recommended_product_id, related_related_products, 'product', 'related_product', related_product_id, force_community_filter=force_community_filter)
+            entities['related_product'].update(filtered_related_products)
+
+    def __call__(self, recommended_product_id, force_community_filter=False, print_report=False, outlier_method='std_dev'):
         entities = {'category': set(), 'brand': set(), 'word': set(), 'related_product': set()}
+        self.outlier_checker = CentralityOutlierChecker(method = outlier_method)
 
-        # Process categories
-        category_ids = self.kg.G['product'].get(product_id, {}).get('belongs_to', [])
-        for category_id in category_ids:
+        category_ids = self.kg.G['product'].get(recommended_product_id, {}).get('belongs_to', [])
+        filtered_category_ids = self.filter_entities(recommended_product_id, category_ids, 'product', 'category', recommended_product_id)
+        for category_id in filtered_category_ids:
             related_products = self.kg.G['category'].get(category_id, {}).get('rev_belongs_to', [])
-            related_products = self.community_filter(product_id, related_products, category_id, 'category', 'product', force_community_filter=force_community_filter)
+            filtered_related_products = self.filter_entities(recommended_product_id, related_products, 'category', 'product', category_id, force_community_filter=force_community_filter)
+            self.update_entities(self.kg.G, filtered_related_products, recommended_product_id, entities, force_community_filter)
 
-            for related_product_id in related_products:
-                related_product_info = self.kg.G['product'].get(related_product_id, {})
-                entities['category'].update(self.filter_entities('category', related_product_info.get('belongs_to', []), product_id, related_product_id, force_community_filter=force_community_filter))
-                entities['brand'].update(self.filter_entities('brand', related_product_info.get('produced_by', []), product_id, related_product_id, force_community_filter=force_community_filter))
-                entities['word'].update(self.filter_entities('word', related_product_info.get('described_by', []), product_id, related_product_id, force_community_filter=force_community_filter))
-                related_related_products = related_product_info.get('also_bought', []) +\
-                                           related_product_info.get('also_viewed', []) +\
-                                           related_product_info.get('bought_together', [])
-                entities['related_product'].update(self.filter_entities('related_product', related_related_products, product_id, related_product_id, force_community_filter=force_community_filter))
 
         # Process brands
-        brand_ids = self.kg.G['product'].get(product_id, {}).get('produced_by', [])
-        for brand_id in brand_ids:
+        brand_ids = self.kg.G['product'].get(recommended_product_id, {}).get('produced_by', [])
+        filtered_brand_ids = self.filter_entities(recommended_product_id, brand_ids, 'product', 'brand', recommended_product_id)
+        for brand_id in filtered_brand_ids:
             related_products = self.kg.G['brand'].get(brand_id, {}).get('rev_produced_by', [])
-            related_products = self.community_filter(product_id, related_products, brand_id, 'brand', 'product', force_community_filter=force_community_filter)
-
-            for related_product_id in related_products:
-                related_product_info = self.kg.G['product'].get(related_product_id, {})
-                entities['category'].update(self.filter_entities('category', related_product_info.get('belongs_to', []), product_id, related_product_id, force_community_filter=force_community_filter))
-                entities['brand'].update(self.filter_entities('brand', related_product_info.get('produced_by', []), product_id, related_product_id, force_community_filter=force_community_filter))
-                entities['word'].update(self.filter_entities('word', related_product_info.get('described_by', []), product_id, related_product_id, force_community_filter=force_community_filter))
-                related_related_products = related_product_info.get('also_bought', []) +\
-                                           related_product_info.get('also_viewed', []) +\
-                                           related_product_info.get('bought_together', [])
-                entities['related_product'].update(self.filter_entities('related_product', related_related_products, product_id, related_product_id, force_community_filter=force_community_filter))
+            filtered_related_products = self.filter_entities(recommended_product_id, related_products, 'brand', 'product', brand_id, force_community_filter=force_community_filter)
+            self.update_entities(self.kg.G, filtered_related_products, recommended_product_id, entities, force_community_filter)
 
         # Process words
-        word_ids = self.kg.G['product'].get(product_id, {}).get('described_by', [])
-        for word_id in word_ids:
+        word_ids = self.kg.G['product'].get(recommended_product_id, {}).get('described_by', [])
+        filtered_word_ids = self.filter_entities(recommended_product_id, word_ids, 'product', 'word', recommended_product_id)
+        for word_id in filtered_word_ids:
             related_products = self.kg.G['word'].get(word_id, {}).get('rev_described_by', [])
-            related_products = self.community_filter(product_id, related_products, word_id, 'word', 'product', force_community_filter=force_community_filter)
+            filtered_related_products = self.filter_entities(recommended_product_id, related_products, 'word', 'product', word_id, force_community_filter=force_community_filter)
+            self.update_entities(self.kg.G, filtered_related_products, recommended_product_id, entities, force_community_filter)
 
-            for related_product_id in related_products:
-                related_product_info = self.kg.G['product'].get(related_product_id, {})
-                entities['category'].update(self.filter_entities('category', related_product_info.get('belongs_to', []), product_id, related_product_id, force_community_filter=force_community_filter))
-                entities['brand'].update(self.filter_entities('brand', related_product_info.get('produced_by', []), product_id, related_product_id, force_community_filter=force_community_filter))
-                entities['word'].update(self.filter_entities('word', related_product_info.get('described_by', []), product_id, related_product_id, force_community_filter=force_community_filter))
-                related_related_products = related_product_info.get('also_bought', []) +\
-                                           related_product_info.get('also_viewed', []) +\
-                                           related_product_info.get('bought_together', [])
-                entities['related_product'].update(self.filter_entities('related_product', related_related_products, product_id, related_product_id, force_community_filter=force_community_filter))
+        # Process directly related products
+        related_products_ids = self.kg.G['product'].get(recommended_product_id, {}).get('also_bought', []) +\
+                                self.kg.G['product'].get(recommended_product_id, {}).get('also_viewed', []) +\
+                                self.kg.G['product'].get(recommended_product_id, {}).get('bought_together', [])
+        filtered_related_products_ids = self.filter_entities(recommended_product_id, related_products_ids, 'product', 'related_product', recommended_product_id, force_community_filter=force_community_filter)
+        self.update_entities(self.kg.G, filtered_related_products_ids, recommended_product_id, entities, force_community_filter)
 
-        # Process related products
-        related_products_1 = self.kg.G['product'].get(product_id, {}).get('also_bought', []) 
-        related_products_2 = self.kg.G['product'].get(product_id, {}).get('also_viewed', []) 
-        related_products_3 = self.kg.G['product'].get(product_id, {}).get('bought_together', []) 
-        related_products = related_products_1 + related_products_2 + related_products_3
-
-        related_products = self.community_filter(product_id, related_products, product_id, 'related_product', 'product', force_community_filter=force_community_filter)
-
-        for related_product_id in related_products:
-            related_product_info = self.kg.G['product'].get(related_product_id, {})
-            entities['category'].update(self.filter_entities('category', related_product_info.get('belongs_to', []), product_id, related_product_id, force_community_filter=force_community_filter))
-            entities['brand'].update(self.filter_entities('brand', related_product_info.get('produced_by', []), product_id, related_product_id, force_community_filter=force_community_filter))
-            entities['word'].update(self.filter_entities('word', related_product_info.get('described_by', []), product_id, related_product_id, force_community_filter=force_community_filter))
-            related_related_products = related_product_info.get('also_bought', []) +\
-                                       related_product_info.get('also_viewed', []) +\
-                                       related_product_info.get('bought_together', [])
-            entities['related_product'].update(self.filter_entities('related_product', related_related_products, product_id, related_product_id, force_community_filter=force_community_filter))
 
         entites= {k: list(v) for k, v in entities.items()}
         if print_report:
@@ -133,11 +138,11 @@ class EntityFilter:
         if not os.path.exists(tmp_directory):
             os.makedirs(tmp_directory)
 
-        filename = f'tmp/counter_paths_scores{product_id}.pkl'
-        # Open a file in write-binary mode
-        with open(filename, 'wb') as file:
-            # Serialize the dictionary using pickle.dump
-            pickle.dump(entites, file)
+        # filename = f'tmp/counter_paths_scores{product_id}.pkl'
+        # # Open a file in write-binary mode
+        # with open(filename, 'wb') as file:
+        #     # Serialize the dictionary using pickle.dump
+        #     pickle.dump(entites, file)
 
         return entites
 

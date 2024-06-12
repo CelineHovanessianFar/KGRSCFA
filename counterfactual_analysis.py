@@ -113,8 +113,11 @@ class ClusterCounterfactuals:
         filename = f'tmp/neighbor_entities_{recommended_product_id}.pkl'
         try:
             with open(filename, 'rb') as file:
-                return pickle.load(file)
+                neighbors=pickle.load(file)
+            print('loaded neighbors file.')
+            return neighbors
         except FileNotFoundError:
+            print('Finding Neighbors!')
             filter = EntityFilter()
             neighboring_entities = filter(recommended_product_id, force_community_filter=True, print_report=True)
             with open(filename, 'wb') as file:
@@ -237,22 +240,22 @@ class CounterfactualFramework:
         }
 
 
-        # Display attributes
-        print("Attributes of the purchased product:")
-        for entity in ['word', 'brand', 'category']:
-            ids = purchased_product_attributes[entity]
-            if ids:
-                old_ids = [self.kg_info.new2old_ids[entity][id] for id in ids]
-                entities = [self.id2entity[entity][old_id] for old_id in old_ids]
-                print(f"{entity.capitalize()} Entities:", entities)
+        # # Display attributes
+        # print("Attributes of the purchased product:")
+        # for entity in ['word', 'brand', 'category']:
+        #     ids = purchased_product_attributes[entity]
+        #     if ids:
+        #         old_ids = [self.kg_info.new2old_ids[entity][id] for id in ids]
+        #         entities = [self.id2entity[entity][old_id] for old_id in old_ids]
+        #         print(f"{entity.capitalize()} Entities:", entities)
 
-        print("\nAttributes of the recommended product:")
-        for entity in ['word', 'brand', 'category']:
-            ids = recommended_product_attributes[entity]
-            if ids: 
-                old_ids = [self.kg_info.new2old_ids[entity][id] for id in ids]
-                entities = [self.id2entity[entity][old_id] for old_id in old_ids]
-                print(f"{entity.capitalize()} Entities:", entities)
+        # print("\nAttributes of the recommended product:")
+        # for entity in ['word', 'brand', 'category']:
+        #     ids = recommended_product_attributes[entity]
+        #     if ids: 
+        #         old_ids = [self.kg_info.new2old_ids[entity][id] for id in ids]
+        #         entities = [self.id2entity[entity][old_id] for old_id in old_ids]
+        #         print(f"{entity.capitalize()} Entities:", entities)
 
         # Plausible Counterfactuals
         print("\nPlausible Counterfactuals:")
@@ -262,5 +265,8 @@ class CounterfactualFramework:
             if ids: 
                 old_ids = [self.kg_info.new2old_ids[entity][id] for id in ids]
                 entities = [self.id2entity[entity][old_id] for old_id in old_ids]
-                print(f"{entity.capitalize()} Entities:", entities)
+                print(f"{entity.capitalize()} Entities:")
+                print()
+                print(entities)
+                print("=" * 150)
 
