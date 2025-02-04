@@ -1,42 +1,36 @@
-import os
-import subprocess
 import CF_utils  
 from recommender import get_recommendation
 from pprint import pprint
-from counterfactual_analysis import CounterfactualFramework
-from CAFE import preprocess
-def is_model_trained(model_path):
-    return os.path.exists(model_path)
+from counterfactual_analysis import CFAnalyzer
 
-def preprocess_completed():
-    count_file = 'CAFE/tmp/Beauty/path_count.pkl'
-    return os.path.exists(count_file)
+from data_registry import DataRegistry
+
 
 def main(args):
-    
-    if not preprocess_completed():
-        print("Running preprocess.py...")
-        preprocess.main(args)
-    print('Preprocess Step Already Completed!')
-        
-    if not is_model_trained(args.symbolic_model):
-        # Run train_neural_symbol.py
-        print("Running train_neural_symbol.py...")
-        subprocess.run(["python", args.train_neural_symbol_dir], check=True)
-    print("Recommender System already trained.")
-    
+    DataRegistry.initialize(args)
     print("Getting recommendations for User...")
     user_recommendations = get_recommendation(args)
     print("Recommendations paths:")
     pprint(user_recommendations)
     
     print("Running counterfactual analysis...")
-    #TODO: remove the hard code
-    path_to_analyize = user_recommendations[0]
-    cf_framework = CounterfactualFramework(args, user_recommendations, path_to_analyize)
-    cf_framework.counterfactual_explanation_textual()
+    # recommendation_to_analyze = user_recommendations[-2]  # Select the path to analyze
+    DataRegistry.populate_attributes(
+        recommendations=user_recommendations,
+        recommendation_to_analyze=user_recommendations[-1],
+        # recommendation_to_analyze=user_recommendations[-1],
+        # TODO: hard-coded
+        k=5,
+        args=args
+    )
 
+
+    # Initialize and call the CFAnalyzer
+    # TODO:
+    cf_analyzer = CFAnalyzer(user_recommendations, DataRegistry.recommendation_to_analyze, args)
+    cf_analyzer.analyze()  # Run the counterfactual analysis using the __call__ method
 
 if __name__ == '__main__':
     args = CF_utils.parse_args()
     main(args)
+
